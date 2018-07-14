@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D3D3D3"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:src="@drawable/oneisall"/>
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="wrap_content"
+        android:layout_height="260dp"
+        android:layout_gravity="center">
+    </android.support.v4.view.ViewPager>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:layout_marginTop="2dp"
+        android:orientation="vertical"
+        android:paddingBottom="20dp" >
+
+        <TextView
+            android:id="@+id/daohang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="20dp"
+            android:text="分类导航"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp">
+
+            <Button
+                android:id="@+id/read"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="2"
+                android:background="@drawable/read"
+                android:layout_below="@id/daohang"
+                android:layout_marginRight="10dp"
+                android:text="阅读"
+                android:gravity="center"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/music"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:background="@drawable/music"
+                android:layout_marginRight="10dp"
+                android:layout_below="@id/read"
+                android:text="音乐"
+                android:gravity="center"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/tuwen"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:background="@drawable/tuwen"
+                android:text="图文"
+                android:gravity="center"
+                android:layout_above="@+id/music"
+                android:layout_toEndOf="@+id/read"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp">
+
+            <Button
+                android:id="@+id/radio"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/radio"
+                android:layout_marginRight="10dp"
+                android:text="电台"
+                android:gravity="center"
+                android:layout_above="@+id/music"
+                android:layout_toEndOf="@+id/tuwen"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/wenda"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/wenda"
+                android:text="问答"
+                android:gravity="center"
+                android:layout_marginRight="10dp"
+                android:layout_below="@id/read"
+                android:layout_toRightOf="@id/music"
+                android:textColor="#FFFFFF" />
+
+
+            <Button
+                android:id="@+id/lianzai"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/lianzai"
+                android:gravity="center"
+                android:text="连载"
+                android:layout_below="@id/read"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/wenda"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/video"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/video"
+                android:gravity="center"
+                android:text="影视"
+                android:layout_toRightOf="@id/lianzai"
+                android:textColor="#FFFFFF"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
