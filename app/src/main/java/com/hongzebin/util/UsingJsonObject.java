@@ -37,6 +37,7 @@ public class UsingJsonObject {
      * 解析出类型列表信息
      *
      * @param jsonData 解析的数据
+     * @param flag 如果为false表示只解析最新一条数据，否则解析全部
      * @return 解析后的数据
      */
     public List<TypeOutline> outlineJson(String jsonData, boolean flag) {

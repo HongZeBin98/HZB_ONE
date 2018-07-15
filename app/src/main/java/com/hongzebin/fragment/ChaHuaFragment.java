@@ -161,7 +161,7 @@ public class ChaHuaFragment extends Fragment {
                     public void onFinish(Object response) {
                         List<String> listStr = (List<String>) response;
                         //储存入数据库
-                        PutingData.putList(listStr, mAddress);
+                        PutingData.putList(listStr, address);
                         realizeAdapter(listStr, mes);
                     }
 
@@ -188,6 +188,7 @@ public class ChaHuaFragment extends Fragment {
      * @param mes 区别不同情况
      */
     private void judgeDataExistence(final int mes) {
+        httpRequest(mes, mAddress);
         if ((mJsonData = AddingAndQuerying.getmAddingAndQuerying().queryJson(mAddress)) == null) {
             httpRequest(mes, mAddress);
         } else {

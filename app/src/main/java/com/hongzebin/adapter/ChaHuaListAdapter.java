@@ -1,6 +1,7 @@
 package com.hongzebin.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ public class ChaHuaListAdapter extends BaseAdapter {
     public ChaHuaListAdapter(Context context, ListView listView, int textViewResourceId, List<ChaHuaDetail> objects) {
         mInflater = LayoutInflater.from(context);
         mObjects = objects;
+        Log.e("ChaHuaListAdapter", String.valueOf(mObjects.size())+"1");
         mResourceId = textViewResourceId;
         mListView = listView;
     }
@@ -49,6 +51,8 @@ public class ChaHuaListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        Log.e("ChaHuaListAdapter", String.valueOf(mObjects.size())+"2");
         ChaHuaDetail chd = mObjects.get(position);
         View view;
         ViewHolder viewHolder;
@@ -74,7 +78,11 @@ public class ChaHuaListAdapter extends BaseAdapter {
         }
         //给图片控件控件设置一个Tag
         viewHolder.picture.setImageResource(R.drawable.picturefail);
+        boolean flag = chd == null;
+
+        Log.e("ChaHuaListAdapter", String.valueOf(flag));
         viewHolder.picture.setTag(chd.getmImgURL());
+
         new DownloadImageForListView(mListView).execute(chd.getmImgURL());
         viewHolder.authorText.setText(chd.getmTextAuthor());
         viewHolder.text.setText(chd.getmText());

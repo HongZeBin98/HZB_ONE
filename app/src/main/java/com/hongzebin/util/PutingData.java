@@ -1,6 +1,7 @@
 package com.hongzebin.util;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import com.hongzebin.db.AddingAndQuerying;
 

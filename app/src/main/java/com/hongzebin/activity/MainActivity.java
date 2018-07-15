@@ -94,12 +94,12 @@ public class MainActivity extends FragmentActivity {
                         .setLargeIcon(bd.getBitmap())
                         .setContentTitle(to.getmTitle())
                         .setContentText(to.getmForward())
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.mipmap.notification)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
                         .setContentIntent(pi)
                         .setAutoCancel(true)
                         .build();
-                manager.notify(1, notification);    //启动通知
+                manager.notify(2, notification);    //启动通知
             }
 
             @Override

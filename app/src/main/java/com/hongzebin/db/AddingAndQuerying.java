@@ -3,6 +3,7 @@ package com.hongzebin.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.hongzebin.util.OneApplication;
 
@@ -20,6 +21,8 @@ public class AddingAndQuerying {
 
     //构造方法私有化，这样外界就不能访问了
     private AddingAndQuerying() {
+//        mDb.execSQL("drop table One");
+//        Log.e("AddingAndQuerying", "88888888888888 ");
     }
 
     //运用单例的静态内部类方法

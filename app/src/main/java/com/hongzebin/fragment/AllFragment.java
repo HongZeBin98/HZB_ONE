@@ -1,9 +1,13 @@
 package com.hongzebin.fragment;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -13,10 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.hongzebin.R;
 import com.hongzebin.activity.TypeActivity;
 import com.hongzebin.adapter.LunBoAdapter;
+import com.hongzebin.service.DownloadService;
 import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.HttpUtil;
@@ -39,16 +45,41 @@ public class AllFragment extends Fragment implements View.OnClickListener {
     private Button mTuwenBtn;
     private Button mMusicBtn;
     private Button mVedioBtn;
+    private TextView mDownload;
     private LunBoAdapter mAdapter;
     private View mView;
     private List<ImageView> mImageList;
     private Handler mHandler;
+    private Context context = OneApplication.getmContext();
+
+    private DownloadService.DownloadBinder downloadBinder;
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            downloadBinder = (DownloadService.DownloadBinder) iBinder;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        context.unbindService(connection);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         mImageList = new ArrayList<>();
         mView = inflater.inflate(R.layout.all, container, false);
+        Intent intent = new Intent(context,  DownloadService.class);
+        context.startService(intent);
+        context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
         //异步消息处理，接受消息后进行UI的改变
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -75,20 +106,27 @@ public class AllFragment extends Fragment implements View.OnClickListener {
             //通过数字确定viewpager打开哪一页
             case R.id.read:
                 intent.putExtra("number", 1);
+                startActivity(intent);
                 break;
             case R.id.music:
                 intent.putExtra("number", 2);
+                startActivity(intent);
                 break;
             case R.id.video:
                 intent.putExtra("number", 3);
+                startActivity(intent);
                 break;
             case R.id.tuwen:
                 intent.putExtra("number", 0);
+                startActivity(intent);
+                break;
+            case R.id.download:
+                downloadBinder.startDownload();
                 break;
             default:
                 break;
         }
-        startActivity(intent);
+
     }
 
     /**
@@ -155,10 +193,12 @@ public class AllFragment extends Fragment implements View.OnClickListener {
         mTuwenBtn = (Button) mView.findViewById(R.id.music);
         mVedioBtn = (Button) mView.findViewById(R.id.video);
         mMusicBtn = (Button) mView.findViewById(R.id.tuwen);
+        mDownload = (TextView) mView.findViewById(R.id.download);
 
         mReadBtn.setOnClickListener(this);
         mTuwenBtn.setOnClickListener(this);
         mMusicBtn.setOnClickListener(this);
         mVedioBtn.setOnClickListener(this);
+        mDownload.setOnClickListener(this);
     }
 }
