@@ -16,6 +16,7 @@ import com.hongzebin.bean.Comment;
 import com.hongzebin.bean.VideoDetail;
 import com.hongzebin.db.AddingAndQuerying;
 import com.hongzebin.ui.ListViewForScrollView;
+import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
@@ -35,7 +36,6 @@ import static com.hongzebin.util.Constant.NONETWORK_REMIND;
 public class VideoDetailActivity extends Activity {
     private ComListAdapter mComAdapter = null;
     private VideoDetail mVideoDetail;
-    private String mJsonData;
     private String mDetailURL;
     private String mCommentURL;
     private Handler mHandler;
@@ -52,8 +52,9 @@ public class VideoDetailActivity extends Activity {
         setContentView(R.layout.videodetail);
         initUI();
         Intent intent = getIntent();
-        mDetailURL = "http://v3.wufazhuce.com:8000/api/movie/" + intent.getStringExtra("id") + "/story/1/0?platform=android";
-        mCommentURL = "http://v3.wufazhuce.com:8000/api/comment/praiseandtime/movie/" + intent.getStringExtra("id") + "/0?&platform=android";
+        String itemId = intent.getStringExtra("itemId");
+        mDetailURL = ApiConstant.getVideoAddress(itemId);
+        mCommentURL = ApiConstant.getVideoComAddress(itemId);
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
@@ -74,9 +75,9 @@ public class VideoDetailActivity extends Activity {
             }
         };
         //请求评论， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(COMMENT);
+        judgeDataExistence(COMMENT, "LIST");
         //请求阅读详细， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(DETAIL);
+        judgeDataExistence(DETAIL, "VIDEO");
     }
 
     /**
@@ -87,7 +88,7 @@ public class VideoDetailActivity extends Activity {
      */
     public static void startVideoDetail(Context context, String str) {
         Intent intent = new Intent(context, VideoDetailActivity.class);
-        intent.putExtra("id", str);
+        intent.putExtra("itemId", str);
         context.startActivity(intent);
     }
 
@@ -97,10 +98,10 @@ public class VideoDetailActivity extends Activity {
      * @param response 待解析的json数据
      * @param mes      区别不同情况
      */
-    private void realizeAdapter(String response, int mes) {
+    private void realizeAdapter(Object response, int mes) {
         Message message = new Message();
         if (mes == DETAIL) {
-            mVideoDetail = UsingJsonObject.getmUsingJsonObject().videoDetailJson((String) response);
+            mVideoDetail =(VideoDetail) response;
             //异步消息处理，发送消息
             message.what = DETAIL;
             mHandler.sendMessage(message);
@@ -123,8 +124,15 @@ public class VideoDetailActivity extends Activity {
         HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
             @Override
             public void onFinish(Object response) {
-                PutingData.putStr(address, (String) response);    //加载进数据库
-                realizeAdapter((String) response, mes);
+                Object object;
+                if(mes == DETAIL){
+                    object = UsingJsonObject.getmUsingJsonObject().videoDetailJson((String) response);
+                    PutingData.putVideo(address, (VideoDetail) object);    //加载进数据库
+                }else {
+                    object = response;
+                    PutingData.putJson(address, (String) response);    //加载进数据库
+                }
+                realizeAdapter(object, mes);
             }
 
             @Override
@@ -162,21 +170,27 @@ public class VideoDetailActivity extends Activity {
      * 判断数据库是否存在未超时可用数据，有就使用，无则请求
      *
      * @param flag 区别不同情况
+     * @param tableName 数据库表名
      */
-    private void judgeDataExistence(final int flag) {
+    private void judgeDataExistence(final int flag, String tableName) {
         String url;
+        boolean judge;
+
         if (flag == DETAIL) {
             url = mDetailURL;
         } else {
             url = mCommentURL;
         }
-        if ((mJsonData = AddingAndQuerying.getmAddingAndQuerying().queryJson(url)) == null) {
+
+        final Object object = AddingAndQuerying.getmAddingAndQuerying().query(url, tableName);
+        judge = object == null;
+        if (judge) {
             httpRequest(flag, url);
         } else {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    realizeAdapter(mJsonData, flag);
+                    realizeAdapter(object, flag);
                 }
             }).start();
         }

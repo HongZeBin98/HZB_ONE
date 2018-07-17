@@ -55,7 +55,7 @@ public class AutoUpdateService extends Service {
         HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {    //网络请求
             @Override
             public void onFinish(Object response) {
-                PutingData.putStr(address, (String)response);    //加载进数据库
+                PutingData.putJson(address, (String)response);    //加载进数据库
             }
 
             @Override

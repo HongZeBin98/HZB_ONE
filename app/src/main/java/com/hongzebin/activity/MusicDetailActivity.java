@@ -15,8 +15,10 @@ import com.hongzebin.R;
 import com.hongzebin.adapter.ComListAdapter;
 import com.hongzebin.bean.Comment;
 import com.hongzebin.bean.MusicDetail;
+import com.hongzebin.bean.ReadDetail;
 import com.hongzebin.db.AddingAndQuerying;
 import com.hongzebin.ui.ListViewForScrollView;
+import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
@@ -38,7 +40,6 @@ import static com.hongzebin.util.Constant.NONETWORK_REMIND;
 public class MusicDetailActivity extends Activity {
     private ComListAdapter mComAdapter = null;
     private MusicDetail mMusicDetail;
-    private String mJsonData;
     private String mDetailURL;
     private String mCommentURL;
     private Handler mHandler;
@@ -60,8 +61,9 @@ public class MusicDetailActivity extends Activity {
         setContentView(R.layout.musicdetail);
         initUI();   //实例化
         Intent intent = getIntent();
-        mDetailURL = "http://v3.wufazhuce.com:8000/api/music/detail/" + intent.getStringExtra("id") + "?version=3.5.0&platform=android";
-        mCommentURL = "http://v3.wufazhuce.com:8000/api/comment/praiseandtime/music/" + intent.getStringExtra("id") + "/0?platform=android";
+        String itemId = intent.getStringExtra("itemId");
+        mDetailURL = ApiConstant.getMusicAddress(itemId);
+        mCommentURL = ApiConstant.getMusicComAddress(itemId);
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
@@ -82,9 +84,9 @@ public class MusicDetailActivity extends Activity {
             }
         };
         //请求评论， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(COMMENT);
-        //请求阅读详细， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(DETAIL);
+        judgeDataExistence(COMMENT, "LIST");
+        //请求音乐详细， 如果数据库存在未超时的有效数据则调用，否则http请求
+        judgeDataExistence(DETAIL, "MUSIC");
     }
 
     /**
@@ -95,7 +97,7 @@ public class MusicDetailActivity extends Activity {
      */
     public static void startMusicDetail(Context context, String str) {
         Intent intent = new Intent(context, MusicDetailActivity.class);
-        intent.putExtra("id", str);
+        intent.putExtra("itemId", str);
         context.startActivity(intent);
     }
 
@@ -105,10 +107,10 @@ public class MusicDetailActivity extends Activity {
      * @param response 待解析的json数据
      * @param mes      区别不同情况
      */
-    private void realizeAdapter(String response, int mes) {
+    private void realizeAdapter(Object response, int mes) {
         Message message = new Message();
         if (mes == DETAIL) {
-            mMusicDetail = UsingJsonObject.getmUsingJsonObject().musicDetailJson((String) response);
+            mMusicDetail = (MusicDetail) response;
             //异步消息处理，发送消息
             message.what = DETAIL;
             mHandler.sendMessage(message);
@@ -130,8 +132,15 @@ public class MusicDetailActivity extends Activity {
         HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
             @Override
             public void onFinish(Object response) {
-                PutingData.putStr(address, (String) response);    //加载进数据库
-                realizeAdapter((String) response, mes); //实例适配器
+                Object object;
+                if(mes == DETAIL){
+                    object = UsingJsonObject.getmUsingJsonObject().musicDetailJson((String) response);
+                    PutingData.putMusic(address, (MusicDetail) object);    //加载进数据库
+                }else {
+                    object = response;
+                    PutingData.putJson(address, (String) response);    //加载进数据库
+                }
+                realizeAdapter(object, mes);
             }
 
             @Override
@@ -179,21 +188,27 @@ public class MusicDetailActivity extends Activity {
      * 判断数据库是否存在未超时可用数据，有就使用，无则请求
      *
      * @param flag 区别不同情况
+     * @param tableName 数据库表名
      */
-    private void judgeDataExistence(final int flag) {
+    private void judgeDataExistence(final int flag, String tableName) {
         String url;
+        boolean judge;
+
         if (flag == DETAIL) {
             url = mDetailURL;
         } else {
             url = mCommentURL;
         }
-        if ((mJsonData = AddingAndQuerying.getmAddingAndQuerying().queryJson(url)) == null) {
+
+        final Object object = AddingAndQuerying.getmAddingAndQuerying().query(url, tableName);
+        judge = object == null;
+        if (judge) {
             httpRequest(flag, url);
         } else {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    realizeAdapter(mJsonData, flag);
+                    realizeAdapter(object, flag);
                 }
             }).start();
         }

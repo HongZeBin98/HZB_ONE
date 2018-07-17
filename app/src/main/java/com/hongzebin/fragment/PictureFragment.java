@@ -106,10 +106,10 @@ public class PictureFragment extends Fragment {
                 mCount = mAdapter.getCount();
                 mId = mList.get(mList.size() - 1).getmItemId();
                 mAddress = ApiConstant.refreshPictureApi(mId);
-                judgeDataExistence(ADD_LOADING);
+                judgeDataExistence(ADD_LOADING, "LIST");
             }
         });
-        judgeDataExistence(NORMAL_LOADING);
+        judgeDataExistence(NORMAL_LOADING, "LIST");
         return mView;
     }
 
@@ -186,8 +186,8 @@ public class PictureFragment extends Fragment {
      *
      * @param mes 区别不同情况
      */
-    private void judgeDataExistence(final int mes) {
-        if ((mJsonData = AddingAndQuerying.getmAddingAndQuerying().queryJson(mAddress)) == null) {
+    private void judgeDataExistence(final int mes, String tableName) {
+        if ((mJsonData = (String)AddingAndQuerying.getmAddingAndQuerying().query(mAddress, tableName)) == null) {
             httpRequest(mes, mAddress);
         } else {
             final List<String> list = ListTurning.strToList(mJsonData);

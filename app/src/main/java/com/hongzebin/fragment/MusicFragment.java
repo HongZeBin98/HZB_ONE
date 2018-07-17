@@ -105,10 +105,10 @@ public class MusicFragment extends Fragment {
                 mCount = mAdapter.getCount();
                 mId = mList.get(mList.size() - 1).getmId();
                 mAddress = ApiConstant.refreshMusicApi(mId);
-                judgeDataExistence(ADD_LOADING);
+                judgeDataExistence(ADD_LOADING, "LIST");
             }
         });
-        judgeDataExistence(NORMAL_LOADING);
+        judgeDataExistence(NORMAL_LOADING, "LIST");
         //打开活动，并传值
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -158,7 +158,7 @@ public class MusicFragment extends Fragment {
         HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
             @Override
             public void onFinish(Object response) {
-                PutingData.putStr(address, (String) response);    //加载进数据库
+                PutingData.putJson(address, (String) response);    //加载进数据库
                 realizeAdapter((String) response, mes);
             }
 
@@ -176,8 +176,8 @@ public class MusicFragment extends Fragment {
      *
      * @param mes 区别不同情况
      */
-    private void judgeDataExistence(final int mes) {
-        if ((mJsonData = AddingAndQuerying.getmAddingAndQuerying().queryJson(mAddress)) == null) {
+    private void judgeDataExistence(final int mes, String tableName) {
+        if ((mJsonData = (String)AddingAndQuerying.getmAddingAndQuerying().query(mAddress, tableName)) == null) {
             httpRequest(mes, mAddress);
         } else {
             new Thread(new Runnable() {

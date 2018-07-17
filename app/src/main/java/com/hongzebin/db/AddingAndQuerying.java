@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.hongzebin.bean.MusicDetail;
+import com.hongzebin.bean.ReadDetail;
+import com.hongzebin.bean.VideoDetail;
 import com.hongzebin.util.OneApplication;
 
 import static com.hongzebin.util.Constant.SAVING_TIME;
@@ -21,8 +24,6 @@ public class AddingAndQuerying {
 
     //构造方法私有化，这样外界就不能访问了
     private AddingAndQuerying() {
-//        mDb.execSQL("drop table One");
-//        Log.e("AddingAndQuerying", "88888888888888 ");
     }
 
     //运用单例的静态内部类方法
@@ -39,24 +40,56 @@ public class AddingAndQuerying {
      *
      * @param values 已经加载了需要储存数据的容器
      */
-    public void add(ContentValues values) {
-        mDb.replace("One", null, values);    //若数据已经存在进行替换，否则增加；
+    public void add(ContentValues values, String tableName) {
+        mDb.replace(tableName, null, values);    //若数据已经存在进行替换，否则增加；
     }
 
     /**
-     * 查询某数据是否存在数据库中而且未超时，在就返回相关数据，否则返回空
+     * 查询某数据是否存在数据库中，在就返回相关数据，否则返回空
      */
-    public String queryJson(String url) {
-        String json = null;
-        Cursor cursor = mDb.query("One", null, "url = ?", new String[]{url}, null, null, null);
+    public Object query(String url, String tableName) {
+        Cursor cursor = mDb.query(tableName, null, "url = ?", new String[]{url}, null, null, null);
         if (cursor.moveToFirst()) {  //判断是否存在该数据
-            boolean flag = System.currentTimeMillis() - cursor.getLong(cursor.getColumnIndex("time")) < SAVING_TIME;
-            if (flag) {  //判读是否超时
-                json = cursor.getString(cursor.getColumnIndex("json"));
+            if (tableName.equals("LIST")){
+                String json = cursor.getString(cursor.getColumnIndex("json"));
+                cursor.close();
+                return json;
+            } else if (tableName.equals("READ")){
+                String title = cursor.getString(cursor.getColumnIndex("title"));
+                String contentHtml = cursor.getString(cursor.getColumnIndex("contentHtml"));
+                String authorDesc = cursor.getString(cursor.getColumnIndex("authorDesc"));
+                String likeCount = cursor.getString(cursor.getColumnIndex("likeCount"));
+                String comCount = cursor.getString(cursor.getColumnIndex("comCount"));
+                String author = cursor.getString(cursor.getColumnIndex("author"));
+
+                ReadDetail readDetail = new ReadDetail(title, author, contentHtml, authorDesc, likeCount, comCount);
+                return readDetail;
+            } else if (tableName.equals("MUSIC")){
+                String musicName = cursor.getString(cursor.getColumnIndex("musicName"));
+                String cover = cursor.getString(cursor.getColumnIndex("cover"));
+                String title = cursor.getString(cursor.getColumnIndex("title"));
+                String summary = cursor.getString(cursor.getColumnIndex("summary"));
+                String contentHtml = cursor.getString(cursor.getColumnIndex("contentHtml"));
+                String lyric = cursor.getString(cursor.getColumnIndex("lyric"));
+                String info = cursor.getString(cursor.getColumnIndex("info"));
+                String likeCount = cursor.getString(cursor.getColumnIndex("likeCount"));
+                String comCount = cursor.getString(cursor.getColumnIndex("comCount"));
+                String author = cursor.getString(cursor.getColumnIndex("author"));
+
+                MusicDetail musicDetail = new MusicDetail(musicName, cover, title, summary, contentHtml, lyric, info, likeCount, comCount, author);
+                return musicDetail;
+            } else if (tableName.equals("VIDEO")){
+                String title = cursor.getString(cursor.getColumnIndex("title"));
+                String contentHtml = cursor.getString(cursor.getColumnIndex("contentHtml"));
+                String summary = cursor.getString(cursor.getColumnIndex("summary"));
+                String likeCount = cursor.getString(cursor.getColumnIndex("likeCount"));
+                String author = cursor.getString(cursor.getColumnIndex("author"));
+
+                VideoDetail videoDetail = new VideoDetail(title, author, summary, contentHtml, likeCount);
+                return videoDetail;
             }
         }
-        cursor.close();
-        return json;
+        return null;
     }
 }
 

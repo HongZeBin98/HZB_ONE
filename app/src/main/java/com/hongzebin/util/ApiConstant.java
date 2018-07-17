@@ -54,4 +54,64 @@ public class ApiConstant {
         String pictureAddress = "http://v3.wufazhuce.com:8000/api/hp/idlist/" + id + "?version=3.5.0&platform=android";
         return pictureAddress;
     }
+
+    /**
+     * 通过itemId得到相应的阅读api
+     * @param itemId 需要添加的itemId
+     * @return 添加了新itemId的阅读api
+     */
+    public static String getReadAddress(String itemId){
+        String ReadDetailAddress = "http://v3.wufazhuce.com:8000/api/essay/" + itemId + "?platform=android";
+        return ReadDetailAddress;
+    }
+
+    /**
+     * 通过itemId得到相应的音乐api
+     * @param itemId 需要添加的itemId
+     * @return 添加了新itemId的音乐api
+     */
+    public static String getMusicAddress(String itemId){
+        String MusicDetailAddress = "http://v3.wufazhuce.com:8000/api/music/detail/" + itemId + "?version=3.5.0&platform=android";
+        return MusicDetailAddress;
+    }
+
+    /**
+     * 通过itemId得到相应的影视api
+     * @param itemId 需要添加的itemId
+     * @return 添加了新itemId的影视api
+     */
+    public static String getVideoAddress(String itemId){
+        String VideoDetailAddress = "http://v3.wufazhuce.com:8000/api/movie/" + itemId + "/story/1/0?platform=android";
+        return VideoDetailAddress;
+    }
+
+    /**
+     * 通过itemId得到相应的影视评论api
+     * @param itemId 需要添加的itemId
+     * @return 添加了新itemId的影视评论api
+     */
+    public static String getVideoComAddress(String itemId){
+        String VideoComAddress = "http://v3.wufazhuce.com:8000/api/comment/praiseandtime/movie/" + itemId + "/0?&platform=android";
+        return VideoComAddress;
+    }
+
+    /**
+     * 通过itemId得到相应的音乐评论api
+     * @param itemId 需要添加的itemId
+     * @return 添加了新itemId的音乐评论api
+     */
+    public static String getMusicComAddress(String itemId){
+        String MusicComAddress = "http://v3.wufazhuce.com:8000/api/comment/praiseandtime/music/" + itemId + "/0?platform=android";
+        return MusicComAddress;
+    }
+
+    /**
+     * 通过itemId得到相应的阅读评论api
+     * @param itemId 需要添加的itemId
+     * @return 添加了新itemId的阅读评论api
+     */
+    public static String getReadComAddress(String itemId){
+        String ReadComAddress = "http://v3.wufazhuce.com:8000/api/comment/praiseandtime/essay/" + itemId + "/0?&platform=android";
+        return ReadComAddress;
+    }
 }

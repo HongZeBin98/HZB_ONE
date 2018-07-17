@@ -38,7 +38,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
                         .url(url)
                         .build();
                 String response = client.newCall(request).execute().body().string();
-                PutingData.putStr(url, response);    //加载进数据库
+                PutingData.putJson(url, response);    //加载进数据库
                 list.addAll(UsingJsonObject.getmUsingJsonObject().outlineJson(response, true));
                 id = list.get(list.size() - 1).getmId();
                 url = "http://v3.wufazhuce.com:8000/api/channel/reading/more/" + id + "?channel=wdj&version=4.0.2&platform=android";
@@ -48,7 +48,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
                             .url(detailUrl)
                             .build();
                     response = client.newCall(request).execute().body().string();
-                    PutingData.putStr(detailUrl, response);    //加载进数据库
+                    PutingData.putJson(detailUrl, response);    //加载进数据库
                     publishProgress(progress);
                     progress += 2;
                 }
