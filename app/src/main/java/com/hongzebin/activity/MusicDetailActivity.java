@@ -27,7 +27,7 @@ import java.util.List;
 
 import static com.hongzebin.util.Constant.COMMENT;
 import static com.hongzebin.util.Constant.DETAIL;
-import static com.hongzebin.util.Constant.NOTNETWORKING_REMIND;
+import static com.hongzebin.util.Constant.NONETWORK_REMIND;
 
 
 /**
@@ -73,7 +73,7 @@ public class MusicDetailActivity extends Activity {
                         listView.setFocusable(false);
                         listView.setAdapter(mComAdapter);
                         break;
-                    case NOTNETWORKING_REMIND:
+                    case NONETWORK_REMIND:
                         Toast.makeText(MusicDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
                         break;
                     default:
@@ -137,7 +137,7 @@ public class MusicDetailActivity extends Activity {
             @Override
             public void onError(Exception e) {
                 Message message = new Message();
-                message.what = NOTNETWORKING_REMIND;
+                message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);
             }
         });

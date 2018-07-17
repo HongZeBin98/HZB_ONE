@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ONE_HongZebin.iml" filepath="$PROJECT_DIR$/ONE_HongZebin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HZB_ONE.iml" filepath="$PROJECT_DIR$/HZB_ONE.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

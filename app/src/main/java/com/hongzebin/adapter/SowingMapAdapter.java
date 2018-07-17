@@ -11,11 +11,11 @@ import java.util.List;
  * Created by 洪泽彬
  */
 
-public class LunBoAdapter extends PagerAdapter {
+public class SowingMapAdapter extends PagerAdapter {
 
     private List<ImageView> mList;
 
-    public LunBoAdapter(List<ImageView> list){
+    public SowingMapAdapter(List<ImageView> list){
         this.mList = list;
     }
 

@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import android.widget.TextView;
 
 import com.hongzebin.R;
 import com.hongzebin.activity.TypeActivity;
-import com.hongzebin.adapter.LunBoAdapter;
+import com.hongzebin.adapter.SowingMapAdapter;
 import com.hongzebin.service.DownloadService;
 import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.OneApplication;
@@ -31,7 +30,7 @@ import com.hongzebin.util.UsingJsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hongzebin.util.ApiConstant.CHAHUA_ADDRESS;
+import static com.hongzebin.util.ApiConstant.PICTURE_ADDRESS;
 import static com.hongzebin.util.Constant.NORMAL_LOADING;
 
 /**all界面，上面有不同类型按钮和一个轮播图
@@ -42,11 +41,11 @@ public class AllFragment extends Fragment implements View.OnClickListener {
 
     private ViewPager mViewPager;
     private Button mReadBtn;
-    private Button mTuwenBtn;
+    private Button mPictureBtn;
     private Button mMusicBtn;
-    private Button mVedioBtn;
+    private Button mVideoBtn;
     private TextView mDownload;
-    private LunBoAdapter mAdapter;
+    private SowingMapAdapter mAdapter;
     private View mView;
     private List<ImageView> mImageList;
     private Handler mHandler;
@@ -93,7 +92,7 @@ public class AllFragment extends Fragment implements View.OnClickListener {
                 }
             }
         };
-        httpRequest(CHAHUA_ADDRESS);
+        httpRequest(PICTURE_ADDRESS);
         initUI();
         return mView;
     }
@@ -144,7 +143,7 @@ public class AllFragment extends Fragment implements View.OnClickListener {
             mImageList.add(iv);
         }
         //配置轮播图适配器
-        mAdapter = new LunBoAdapter(mImageList);
+        mAdapter = new SowingMapAdapter(mImageList);
         //发送消息
         Message message = new Message();
         message.what = NORMAL_LOADING;
@@ -172,14 +171,12 @@ public class AllFragment extends Fragment implements View.OnClickListener {
                     }
                     @Override
                     public void onError(Exception e) {
-                        Log.d("ChaHuaFragment", "--------------Error: ");
                         e.printStackTrace();
                     }
                 });
             }
             @Override
             public void onError(Exception e) {
-                Log.d("ChaHuaFragment", "--------------Error: ");
                 e.printStackTrace();
             }
         });
@@ -190,15 +187,15 @@ public class AllFragment extends Fragment implements View.OnClickListener {
      */
     private void initUI() {
         mReadBtn = (Button) mView.findViewById(R.id.read);
-        mTuwenBtn = (Button) mView.findViewById(R.id.music);
-        mVedioBtn = (Button) mView.findViewById(R.id.video);
+        mPictureBtn = (Button) mView.findViewById(R.id.music);
+        mVideoBtn = (Button) mView.findViewById(R.id.video);
         mMusicBtn = (Button) mView.findViewById(R.id.tuwen);
         mDownload = (TextView) mView.findViewById(R.id.download);
 
         mReadBtn.setOnClickListener(this);
-        mTuwenBtn.setOnClickListener(this);
+        mPictureBtn.setOnClickListener(this);
         mMusicBtn.setOnClickListener(this);
-        mVedioBtn.setOnClickListener(this);
+        mVideoBtn.setOnClickListener(this);
         mDownload.setOnClickListener(this);
     }
 }

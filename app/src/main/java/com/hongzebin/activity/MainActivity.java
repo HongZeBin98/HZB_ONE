@@ -5,36 +5,27 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
 import com.hongzebin.R;
-import com.hongzebin.adapter.FragAdapter;
+import com.hongzebin.adapter.ViewPagerAdapter;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.fragment.AllFragment;
 import com.hongzebin.fragment.OneFragment;
-import com.hongzebin.fragment.ReadFragment;
 import com.hongzebin.service.AutoUpdateService;
 import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.GlobalTools;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
-import com.hongzebin.util.PutingData;
 import com.hongzebin.util.UsingJsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.hongzebin.util.Constant.NOTNETWORKING_REMIND;
 
 /**
  * 主界面，通过viewpager有one和all页面
@@ -67,7 +58,7 @@ public class MainActivity extends FragmentActivity {
         mTitleList = new ArrayList<String>();
         mTitleList.add(" ");
         mTitleList.add(" ");
-        FragAdapter adapter = new FragAdapter(getSupportFragmentManager(), mFragmentList, mTitleList);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), mFragmentList, mTitleList);
         mViewPager.setAdapter(adapter);
     }
 

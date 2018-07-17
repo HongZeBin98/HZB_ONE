@@ -4,14 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hongzebin.R;
-import com.hongzebin.bean.ChaHuaDetail;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.util.DownloadImageForListView;
 
@@ -65,7 +63,7 @@ public class TypeListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.author = (TextView) view.findViewById(R.id.list_author);
             viewHolder.title = (TextView) view.findViewById(R.id.list_title);
-            viewHolder.yinyan = (TextView) view.findViewById(R.id.list_yinyan);
+            viewHolder.forword = (TextView) view.findViewById(R.id.list_yinyan);
             viewHolder.time = (TextView) view.findViewById(R.id.list_time);
             viewHolder.number = (TextView) view.findViewById(R.id.list_number);
             viewHolder.picture = (ImageView) view.findViewById(R.id.list_picture);
@@ -79,7 +77,7 @@ public class TypeListAdapter extends BaseAdapter {
         viewHolder.picture.setTag(to.getmImgURL());
         new DownloadImageForListView(mListView).execute(to.getmImgURL());
         viewHolder.title.setText(to.getmTitle());
-        viewHolder.yinyan.setText(to.getmForward());
+        viewHolder.forword.setText(to.getmForward());
         viewHolder.author.setText(to.getmAuthor());
         viewHolder.time.setText(to.getmDate());
         viewHolder.number.setText(to.getmLikeCount());
@@ -90,7 +88,7 @@ public class TypeListAdapter extends BaseAdapter {
     private class ViewHolder {
         TextView title;
         TextView author;
-        TextView yinyan;
+        TextView forword;
         TextView time;
         TextView number;
         ImageView picture;

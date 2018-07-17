@@ -1,6 +1,6 @@
 package com.hongzebin.util;
 
-import com.hongzebin.bean.ChaHuaDetail;
+import com.hongzebin.bean.PictureDetail;
 import com.hongzebin.bean.Comment;
 import com.hongzebin.bean.MusicDetail;
 import com.hongzebin.bean.ReadDetail;
@@ -115,8 +115,8 @@ public class UsingJsonObject {
      * @param jsonData 解析的数据
      * @return 解析后的数据
      */
-    public ChaHuaDetail chaHuaDetailJson(String jsonData) {
-        ChaHuaDetail chd = null;
+    public PictureDetail chaHuaDetailJson(String jsonData) {
+        PictureDetail chd = null;
         try {
             JSONObject jsono = new JSONObject(jsonData).getJSONObject("data");
             String id = jsono.getString("hpcontent_id");
@@ -126,7 +126,7 @@ public class UsingJsonObject {
             String number = jsono.getString("praisenum");
             String textAuthors = jsono.getString("text_authors");
             String pictureURL = jsono.getString("hp_img_url");
-            chd = new ChaHuaDetail(id, pictureURL, pictureText, text, time, textAuthors, number);
+            chd = new PictureDetail(id, pictureURL, pictureText, text, time, textAuthors, number);
         } catch (JSONException e) {
             e.printStackTrace();
         }

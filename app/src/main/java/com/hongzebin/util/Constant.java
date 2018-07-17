@@ -17,7 +17,7 @@ public class Constant {
     //评论
     public static final int COMMENT = 5;
     //无网络提醒
-    public static final int NOTNETWORKING_REMIND = 6;
+    public static final int NONETWORK_REMIND = 6;
     //设置本地缓存时间为2小时
     public static final long SAVING_TIME = 1000 * 60 * 60 * 2;
 }

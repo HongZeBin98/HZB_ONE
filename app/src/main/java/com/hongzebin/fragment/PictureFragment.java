@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.hongzebin.R;
-import com.hongzebin.adapter.ChaHuaListAdapter;
-import com.hongzebin.bean.ChaHuaDetail;
+import com.hongzebin.adapter.PictureListAdapter;
+import com.hongzebin.bean.PictureDetail;
 import com.hongzebin.db.AddingAndQuerying;
+import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.ListTurning;
 import com.hongzebin.util.OneApplication;
@@ -26,10 +26,10 @@ import com.hongzebin.util.UsingJsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hongzebin.util.ApiConstant.CHAHUA_ADDRESS;
+import static com.hongzebin.util.ApiConstant.PICTURE_ADDRESS;
 import static com.hongzebin.util.Constant.ADD_LOADING;
 import static com.hongzebin.util.Constant.NORMAL_LOADING;
-import static com.hongzebin.util.Constant.NOTNETWORKING_REMIND;
+import static com.hongzebin.util.Constant.NONETWORK_REMIND;
 import static com.hongzebin.util.Constant.REFRESH_LOADING;
 
 
@@ -37,9 +37,9 @@ import static com.hongzebin.util.Constant.REFRESH_LOADING;
  * 插画的列表页面
  * Created by 洪泽彬
  */
-public class ChaHuaFragment extends Fragment {
-    private List<ChaHuaDetail> mList;
-    private ChaHuaListAdapter mAdapter;
+public class PictureFragment extends Fragment {
+    private List<PictureDetail> mList;
+    private PictureListAdapter mAdapter;
     private SwipeRefreshLayout mRefresh;
     private ListView mListView;
     private Handler mHandler;
@@ -54,14 +54,14 @@ public class ChaHuaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mId = "0";
-        mAddress = "http://v3.wufazhuce.com:8000/api/hp/idlist/" + mId + "?version=3.5.0&platform=android";
+        mAddress = ApiConstant.refreshPictureApi(mId);
         mList = new ArrayList<>();
         mView = inflater.inflate(R.layout.type, container, false);
         mFooterView = inflater.inflate(R.layout.loadingmore, null);
         mListView = (ListView) mView.findViewById(R.id.type_listview);
         mRefresh = (SwipeRefreshLayout) mView.findViewById(R.id.refresh);
         Button btn = (Button) mFooterView.findViewById(R.id.loading_btn);
-        mListView.addFooterView(mFooterView);   //listview最后一条为加载更多
+        mListView.addFooterView(mFooterView);   //活动列表最后一条为加载更多
         //异步消息处理，接受消息
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -83,7 +83,7 @@ public class ChaHuaFragment extends Fragment {
                         mListView.setSelection(mCount);
                         break;
                     //无网络提示
-                    case NOTNETWORKING_REMIND:
+                    case NONETWORK_REMIND:
                         Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
                         mRefresh.setRefreshing(false);      //隐藏刷新图标
                         break;
@@ -96,7 +96,7 @@ public class ChaHuaFragment extends Fragment {
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                httpRequest(REFRESH_LOADING, CHAHUA_ADDRESS);
+                httpRequest(REFRESH_LOADING, PICTURE_ADDRESS);
             }
         });
         //加载更多的按钮监听
@@ -105,7 +105,7 @@ public class ChaHuaFragment extends Fragment {
             public void onClick(View v) {
                 mCount = mAdapter.getCount();
                 mId = mList.get(mList.size() - 1).getmItemId();
-                mAddress = "http://v3.wufazhuce.com:8000/api/hp/idlist/" + mId + "?version=3.5.0&platform=android";
+                mAddress = ApiConstant.refreshPictureApi(mId);
                 judgeDataExistence(ADD_LOADING);
             }
         });
@@ -125,7 +125,7 @@ public class ChaHuaFragment extends Fragment {
             for (String x : list) {
                 mList.add(UsingJsonObject.getmUsingJsonObject().chaHuaDetailJson(x));
             }
-            mAdapter = new ChaHuaListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
+            mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
             //异步消息处理，发送消息
             message.what = mes;
             mHandler.sendMessage(message);
@@ -134,7 +134,7 @@ public class ChaHuaFragment extends Fragment {
             for (String x : list) {
                 mList.add(UsingJsonObject.getmUsingJsonObject().chaHuaDetailJson(x));
             }
-            mAdapter = new ChaHuaListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
+            mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
             message.what = mes;
             mHandler.sendMessage(message);
         } else if (mes == ADD_LOADING) {
@@ -167,7 +167,6 @@ public class ChaHuaFragment extends Fragment {
 
                     @Override
                     public void onError(Exception e) {
-                        Log.d("ChaHuaFragment", "--------------Error: ");
                         e.printStackTrace();
                     }
                 });
@@ -176,7 +175,7 @@ public class ChaHuaFragment extends Fragment {
             @Override
             public void onError(Exception e) {
                 Message message = new Message();
-                message.what = NOTNETWORKING_REMIND;
+                message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);
             }
         });
@@ -188,7 +187,6 @@ public class ChaHuaFragment extends Fragment {
      * @param mes 区别不同情况
      */
     private void judgeDataExistence(final int mes) {
-        httpRequest(mes, mAddress);
         if ((mJsonData = AddingAndQuerying.getmAddingAndQuerying().queryJson(mAddress)) == null) {
             httpRequest(mes, mAddress);
         } else {

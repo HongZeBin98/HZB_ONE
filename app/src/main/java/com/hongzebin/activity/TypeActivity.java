@@ -9,10 +9,10 @@ import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 
 import com.hongzebin.R;
-import com.hongzebin.adapter.FragAdapter;
+import com.hongzebin.adapter.ViewPagerAdapter;
 import com.hongzebin.fragment.ReadFragment;
 import com.hongzebin.fragment.MusicFragment;
-import com.hongzebin.fragment.ChaHuaFragment;
+import com.hongzebin.fragment.PictureFragment;
 import com.hongzebin.fragment.VideoFragment;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class TypeActivity extends FragmentActivity {
         mPts.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);   //设置滚动标题字大小
 
         mFragmentList = new ArrayList<Fragment>();
-        mFragmentList.add(new ChaHuaFragment());
+        mFragmentList.add(new PictureFragment());
         mFragmentList.add(new ReadFragment());
         mFragmentList.add(new MusicFragment());
         mFragmentList.add(new VideoFragment());
@@ -50,7 +50,7 @@ public class TypeActivity extends FragmentActivity {
         mTitleList.add("音乐");
         mTitleList.add("影视");
 
-        FragAdapter adapter = new FragAdapter(getSupportFragmentManager(), mFragmentList, mTitleList);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), mFragmentList, mTitleList);
         mViewPager.setAdapter(adapter);
         mViewPager.setCurrentItem(intent.getIntExtra("number", -1)); //设置打开时默认页面
     }

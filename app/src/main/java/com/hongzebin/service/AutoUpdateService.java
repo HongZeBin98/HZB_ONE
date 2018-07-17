@@ -5,9 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.PutingData;
@@ -15,8 +13,6 @@ import com.hongzebin.util.UsingJsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.hongzebin.util.Constant.NOTNETWORKING_REMIND;
 
 /**
  * 每隔12小时后台自动更新
@@ -88,7 +84,6 @@ public class AutoUpdateService extends Service {
 
                     @Override
                     public void onError(Exception e) {
-                        Log.d("ChaHuaFragment", "--------------Error: ");
                         e.printStackTrace();
                     }
                 });
@@ -96,7 +91,6 @@ public class AutoUpdateService extends Service {
 
             @Override
             public void onError(Exception e) {
-                Log.d("ChaHuaFragment", "--------------Error: ");
                 e.printStackTrace();
             }
         });

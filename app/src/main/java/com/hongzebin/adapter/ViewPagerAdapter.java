@@ -16,11 +16,11 @@ import java.util.List;
  * Created by 洪泽彬
  */
 
-public class FragAdapter extends android.support.v4.app.FragmentPagerAdapter {
+public class ViewPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {
     private List<Fragment> mFragments;  //用于保存用于滑动的Fragment对象
     private List<String> mTitleList;
 
-    public FragAdapter(FragmentManager fm, List<Fragment> fragments, List<String> titles) {
+    public ViewPagerAdapter(FragmentManager fm, List<Fragment> fragments, List<String> titles) {
         super(fm);
         mFragments = fragments;   //来返回当前要显示的fragment
         mTitleList = titles;

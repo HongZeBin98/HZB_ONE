@@ -5,7 +5,7 @@ package com.hongzebin.bean;
  * Created by 洪泽彬
  */
 
-public class ChaHuaDetail {
+public class PictureDetail {
     private String mItemId;
     private String mImgURL;
     private String mPictureText;
@@ -14,8 +14,8 @@ public class ChaHuaDetail {
     private String mTextAuthor;
     private String mLikeCount;
 
-    public ChaHuaDetail(String mItemId, String mImgURL, String mPictureText, String mText,
-                        String mTime, String mTextAuthor, String mLikeCount) {
+    public PictureDetail(String mItemId, String mImgURL, String mPictureText, String mText,
+                         String mTime, String mTextAuthor, String mLikeCount) {
         this.mItemId = mItemId;
         this.mImgURL = mImgURL;
         this.mPictureText = mPictureText;

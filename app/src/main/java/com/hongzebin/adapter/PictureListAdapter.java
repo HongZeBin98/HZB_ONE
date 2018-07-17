@@ -11,7 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hongzebin.R;
-import com.hongzebin.bean.ChaHuaDetail;
+import com.hongzebin.bean.PictureDetail;
 import com.hongzebin.util.DownloadImageForListView;
 
 import java.util.List;
@@ -20,16 +20,15 @@ import java.util.List;
  * 插画listview适配器
  * Created by 洪泽彬
  */
-public class ChaHuaListAdapter extends BaseAdapter {
+public class PictureListAdapter extends BaseAdapter {
     private ListView mListView;
     private LayoutInflater mInflater;
     private int mResourceId;
-    private List<ChaHuaDetail> mObjects;
+    private List<PictureDetail> mObjects;
 
-    public ChaHuaListAdapter(Context context, ListView listView, int textViewResourceId, List<ChaHuaDetail> objects) {
+    public PictureListAdapter(Context context, ListView listView, int textViewResourceId, List<PictureDetail> objects) {
         mInflater = LayoutInflater.from(context);
         mObjects = objects;
-        Log.e("ChaHuaListAdapter", String.valueOf(mObjects.size())+"1");
         mResourceId = textViewResourceId;
         mListView = listView;
     }
@@ -52,8 +51,7 @@ public class ChaHuaListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Log.e("ChaHuaListAdapter", String.valueOf(mObjects.size())+"2");
-        ChaHuaDetail chd = mObjects.get(position);
+        PictureDetail chd = mObjects.get(position);
         View view;
         ViewHolder viewHolder;
         if (mListView == null) {
@@ -78,11 +76,7 @@ public class ChaHuaListAdapter extends BaseAdapter {
         }
         //给图片控件控件设置一个Tag
         viewHolder.picture.setImageResource(R.drawable.picturefail);
-        boolean flag = chd == null;
-
-        Log.e("ChaHuaListAdapter", String.valueOf(flag));
         viewHolder.picture.setTag(chd.getmImgURL());
-
         new DownloadImageForListView(mListView).execute(chd.getmImgURL());
         viewHolder.authorText.setText(chd.getmTextAuthor());
         viewHolder.text.setText(chd.getmText());

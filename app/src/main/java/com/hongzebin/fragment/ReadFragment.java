@@ -18,6 +18,7 @@ import com.hongzebin.activity.ReadDetailActivity;
 import com.hongzebin.adapter.TypeListAdapter;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.db.AddingAndQuerying;
+import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
@@ -29,7 +30,7 @@ import java.util.List;
 import static com.hongzebin.util.ApiConstant.READ_ADDRESS;
 import static com.hongzebin.util.Constant.ADD_LOADING;
 import static com.hongzebin.util.Constant.NORMAL_LOADING;
-import static com.hongzebin.util.Constant.NOTNETWORKING_REMIND;
+import static com.hongzebin.util.Constant.NONETWORK_REMIND;
 import static com.hongzebin.util.Constant.REFRESH_LOADING;
 
 /**
@@ -53,7 +54,7 @@ public class ReadFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mId = "0";
-        mAddress = "http://v3.wufazhuce.com:8000/api/channel/reading/more/" + mId + "?channel=wdj&version=4.0.2&platform=android";
+        mAddress = ApiConstant.refreshReadApi(mId);
         mList = new ArrayList<>();
         mView = inflater.inflate(R.layout.type, container, false);
         mFooterView = inflater.inflate(R.layout.loadingmore, null);
@@ -82,7 +83,7 @@ public class ReadFragment extends Fragment {
                         mListView.setSelection(mCount);
                         break;
                     //无网络提示
-                    case NOTNETWORKING_REMIND:
+                    case NONETWORK_REMIND:
                         Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
                         mRefresh.setRefreshing(false);      //隐藏刷新图标
                         break;
@@ -105,7 +106,7 @@ public class ReadFragment extends Fragment {
             public void onClick(View v) {
                 mCount = mAdapter.getCount();
                 mId = mList.get(mList.size() - 1).getmId();
-                mAddress = "http://v3.wufazhuce.com:8000/api/channel/reading/more/" + mId + "?channel=wdj&version=4.0.2&platform=android";
+                mAddress = ApiConstant.refreshReadApi(mId);
                 judgeDataExistence(ADD_LOADING);
             }
         });
@@ -165,7 +166,7 @@ public class ReadFragment extends Fragment {
             @Override
             public void onError(Exception e) {
                 Message message = new Message();
-                message.what = NOTNETWORKING_REMIND;
+                message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);
             }
         });

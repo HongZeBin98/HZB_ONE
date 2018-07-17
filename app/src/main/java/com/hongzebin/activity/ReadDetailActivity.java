@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.hongzebin.util.Constant.COMMENT;
 import static com.hongzebin.util.Constant.DETAIL;
-import static com.hongzebin.util.Constant.NOTNETWORKING_REMIND;
+import static com.hongzebin.util.Constant.NONETWORK_REMIND;
 
 /**
  * 阅读详细界面
@@ -66,7 +66,7 @@ public class ReadDetailActivity extends Activity {
                         listView.setFocusable(false);
                         listView.setAdapter(mComAdapter);
                         break;
-                    case NOTNETWORKING_REMIND:
+                    case NONETWORK_REMIND:
                         Toast.makeText(ReadDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
                         break;
                     default:
@@ -131,7 +131,7 @@ public class ReadDetailActivity extends Activity {
             @Override
             public void onError(Exception e) {
                 Message message = new Message();
-                message.what = NOTNETWORKING_REMIND;
+                message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);
             }
         });
@@ -154,7 +154,8 @@ public class ReadDetailActivity extends Activity {
      */
     public void putDataToUI() {
         mTitle.setText(mReadDetail.getmTitle());
-        mAuthor.setText("文/" + mReadDetail.getmAuthor());
+        String author = "文/" + mReadDetail.getmAuthor();
+        mAuthor.setText(author);
         mAuthorDesc.setText(mReadDetail.getmAuthorDesc());
         mLikeNum.setText(mReadDetail.getmLikeNum());
         mComNum.setText(mReadDetail.getmCommentNum());
