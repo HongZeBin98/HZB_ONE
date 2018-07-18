@@ -6,89 +6,89 @@ package com.hongzebin.bean;
  */
 
 public class TypeOutline {
-    private String mId;
-    private String mItemId;
-    private String mTitle;
-    private String mForward;
-    private String mImgURL;
-    private String mLikeCount;
-    private String mDate;
-    private String mAuthor;
+    private String id;
+    private String item_id;
+    private String title;
+    private String forward;
+    private String img_url;
+    private String like_count;
+    private String post_date;
+    private Author author;
 
-    public TypeOutline(String mId, String mAuthor, String mItemId, String mTitle, String forward,
-                       String mImgURL, String mLikeCount, String mDate) {
-        this.mId = mId;
-        this.mAuthor = mAuthor;
-        this.mItemId = mItemId;
-        this.mTitle = mTitle;
-        this.mForward = forward;
-        this.mImgURL = mImgURL;
-        this.mLikeCount = mLikeCount;
-        this.mDate = mDate;
+    public TypeOutline(String id, String item_id, String title, String forward, String img_url,
+                       String like_count, String post_date, Author user_name) {
+        this.id = id;
+        this.item_id = item_id;
+        this.title = title;
+        this.forward = forward;
+        this.img_url = img_url;
+        this.like_count = like_count;
+        this.post_date = post_date;
+        this.author = user_name;
     }
 
-    public String getmId() {
-        return mId;
+    public String getId() {
+        return id;
     }
 
-    public void setmId(String mId) {
-        this.mId = mId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getmForward() {
-        return mForward;
+    public String getItem_id() {
+        return item_id;
     }
 
-    public void setmForward(String mForward) {
-        this.mForward = mForward;
+    public void setItem_id(String item_id) {
+        this.item_id = item_id;
     }
 
-    public String getmItemId() {
-        return mItemId;
+    public String getTitle() {
+        return title;
     }
 
-    public void setmItemId(String mItemId) {
-        this.mItemId = mItemId;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getmTitle() {
-        return mTitle;
+    public String getForward() {
+        return forward;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
+    public void setForward(String forward) {
+        this.forward = forward;
     }
 
-    public String getmImgURL() {
-        return mImgURL;
+    public String getImg_url() {
+        return img_url;
     }
 
-    public void setmImgURL(String mImgURL) {
-        this.mImgURL = mImgURL;
+    public void setImg_url(String img_url) {
+        this.img_url = img_url;
     }
 
-    public String getmLikeCount() {
-        return mLikeCount;
+    public String getLike_count() {
+        return like_count;
     }
 
-    public void setmLikeCount(String mLikeCount) {
-        this.mLikeCount = mLikeCount;
+    public void setLike_count(String like_count) {
+        this.like_count = like_count;
     }
 
-    public String getmDate() {
-        return mDate;
+    public String getPost_date() {
+        return post_date;
     }
 
-    public void setmDate(String mDate) {
-        this.mDate = mDate;
+    public void setPost_date(String post_date) {
+        this.post_date = post_date;
     }
 
-    public String getmAuthor() {
-        return mAuthor;
+    public Author getAuthor() {
+        return author;
     }
 
-    public void setmAuthor(String mAuthor) {
-        this.mAuthor = mAuthor;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
 }

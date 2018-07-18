@@ -15,7 +15,6 @@ import com.hongzebin.R;
 import com.hongzebin.adapter.ComListAdapter;
 import com.hongzebin.bean.Comment;
 import com.hongzebin.bean.MusicDetail;
-import com.hongzebin.bean.ReadDetail;
 import com.hongzebin.db.AddingAndQuerying;
 import com.hongzebin.ui.ListViewForScrollView;
 import com.hongzebin.util.ApiConstant;
@@ -23,7 +22,7 @@ import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.List;
 
@@ -115,7 +114,7 @@ public class MusicDetailActivity extends Activity {
             message.what = DETAIL;
             mHandler.sendMessage(message);
         } else {
-            List<Comment> comList = UsingJsonObject.getmUsingJsonObject().commentJson((String) response);
+            List<Comment> comList = UsingGson.getUsingGson().commentGson((String) response);
             mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, comList);
             message.what = COMMENT;
             mHandler.sendMessage(message);
@@ -134,7 +133,7 @@ public class MusicDetailActivity extends Activity {
             public void onFinish(Object response) {
                 Object object;
                 if(mes == DETAIL){
-                    object = UsingJsonObject.getmUsingJsonObject().musicDetailJson((String) response);
+                    object = UsingGson.getUsingGson().musicDetailGson((String) response);
                     PutingData.putMusic(address, (MusicDetail) object);    //加载进数据库
                 }else {
                     object = response;
@@ -172,16 +171,17 @@ public class MusicDetailActivity extends Activity {
      * 给UI控件传值
      */
     private void putDataToUI() {
-        new DownloadImage(mImg).execute(mMusicDetail.getmCover());
-        mTitle.setText(mMusicDetail.getmTitle());
-        mSummary.setText(mMusicDetail.getmSummary());
-        mName.setText(mMusicDetail.getmMusicName());
-        mInfo.setText(mMusicDetail.getmInfo());
-        mLyric.setText(mMusicDetail.getmLyric());
-        mConNum.setText(mMusicDetail.getmCommentNum());
-        mAuthor.setText("文/" + mMusicDetail.getmAuthor());
-        mLikeNum.setText(mMusicDetail.getmLikeNum());
-        mStory.setText(Html.fromHtml(mMusicDetail.getmStory()));
+        new DownloadImage(mImg).execute(mMusicDetail.getCover());
+        mTitle.setText(mMusicDetail.getStory_title());
+
+        mSummary.setText(mMusicDetail.getStory_summary());
+        mName.setText(mMusicDetail.getTitle());
+        mInfo.setText(mMusicDetail.getInfo());
+        mLyric.setText(mMusicDetail.getLyric());
+        mConNum.setText(mMusicDetail.getCommentnum());
+        mAuthor.setText("文/" + mMusicDetail.getAuthor().getUser_name());
+        mLikeNum.setText(mMusicDetail.getPraisenum());
+        mStory.setText(Html.fromHtml(mMusicDetail.getStory()));
     }
 
     /**
@@ -205,12 +205,7 @@ public class MusicDetailActivity extends Activity {
         if (judge) {
             httpRequest(flag, url);
         } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    realizeAdapter(object, flag);
-                }
-            }).start();
+            realizeAdapter(object, flag);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.hongzebin.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hongzebin.R;
+import com.hongzebin.bean.Author;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.util.DownloadImageForListView;
 
@@ -63,7 +65,7 @@ public class TypeListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.author = (TextView) view.findViewById(R.id.list_author);
             viewHolder.title = (TextView) view.findViewById(R.id.list_title);
-            viewHolder.forword = (TextView) view.findViewById(R.id.list_yinyan);
+            viewHolder.forward = (TextView) view.findViewById(R.id.list_yinyan);
             viewHolder.time = (TextView) view.findViewById(R.id.list_time);
             viewHolder.number = (TextView) view.findViewById(R.id.list_number);
             viewHolder.picture = (ImageView) view.findViewById(R.id.list_picture);
@@ -73,14 +75,15 @@ public class TypeListAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
         //给图片控件控件设置一个Tag
+        String imgUrl = to.getImg_url();
         viewHolder.picture.setImageResource(R.drawable.picturefail);
-        viewHolder.picture.setTag(to.getmImgURL());
-        new DownloadImageForListView(mListView).execute(to.getmImgURL());
-        viewHolder.title.setText(to.getmTitle());
-        viewHolder.forword.setText(to.getmForward());
-        viewHolder.author.setText(to.getmAuthor());
-        viewHolder.time.setText(to.getmDate());
-        viewHolder.number.setText(to.getmLikeCount());
+        viewHolder.picture.setTag(imgUrl);
+        new DownloadImageForListView(mListView).execute(imgUrl);
+        viewHolder.title.setText(to.getTitle());
+        viewHolder.forward.setText(to.getForward());
+        viewHolder.author.setText(to.getAuthor().getUser_name());
+        viewHolder.time.setText(to.getPost_date());
+        viewHolder.number.setText(to.getLike_count());
         return view;
     }
 
@@ -88,7 +91,7 @@ public class TypeListAdapter extends BaseAdapter {
     private class ViewHolder {
         TextView title;
         TextView author;
-        TextView forword;
+        TextView forward;
         TextView time;
         TextView number;
         ImageView picture;

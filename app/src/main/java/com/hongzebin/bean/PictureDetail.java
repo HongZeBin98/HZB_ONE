@@ -6,78 +6,79 @@ package com.hongzebin.bean;
  */
 
 public class PictureDetail {
-    private String mItemId;
-    private String mImgURL;
-    private String mPictureText;
-    private String mText;
-    private String mTime;
-    private String mTextAuthor;
-    private String mLikeCount;
 
-    public PictureDetail(String mItemId, String mImgURL, String mPictureText, String mText,
-                         String mTime, String mTextAuthor, String mLikeCount) {
-        this.mItemId = mItemId;
-        this.mImgURL = mImgURL;
-        this.mPictureText = mPictureText;
-        this.mText = mText;
-        this.mTime = mTime;
-        this.mTextAuthor = mTextAuthor;
-        this.mLikeCount = mLikeCount;
+    private String hpcontent_id;
+    private String hp_img_url;
+    private String hp_author;
+    private String hp_content;
+    private String last_update_date;
+    private String text_authors;
+    private String praisenum;
+
+    public PictureDetail(String hpcontent_id, String hp_img_url, String hp_author, String hp_content, String last_update_date, String text_authors, String praisenum) {
+        this.hpcontent_id = hpcontent_id;
+        this.hp_img_url = hp_img_url;
+        this.hp_author = hp_author;
+        this.hp_content = hp_content;
+        this.last_update_date = last_update_date;
+        this.text_authors = text_authors;
+        this.praisenum = praisenum;
     }
 
-    public String getmItemId() {
-        return mItemId;
+    public String getHpcontent_id() {
+        return hpcontent_id;
     }
 
-    public void setmItemId(String mItemId) {
-        this.mItemId = mItemId;
+    public void setHpcontent_id(String hpcontent_id) {
+        this.hpcontent_id = hpcontent_id;
     }
 
-    public String getmImgURL() {
-        return mImgURL;
+    public String getHp_img_url() {
+        return hp_img_url;
     }
 
-    public void setmImgURL(String mImgURL) {
-        this.mImgURL = mImgURL;
+    public void setHp_img_url(String hp_img_url) {
+        this.hp_img_url = hp_img_url;
     }
 
-    public String getmPictureText() {
-        return mPictureText;
+    public String getHp_author() {
+        return hp_author;
     }
 
-    public void setmPictureText(String mPictureText) {
-        this.mPictureText = mPictureText;
+    public void setHp_author(String hp_author) {
+        this.hp_author = hp_author;
     }
 
-    public String getmText() {
-        return mText;
+    public String getHp_content() {
+        return hp_content;
     }
 
-    public void setmText(String mText) {
-        this.mText = mText;
+    public void setHp_content(String hp_content) {
+        this.hp_content = hp_content;
     }
 
-    public String getmTime() {
-        return mTime;
+    public String getLast_update_date() {
+        return last_update_date;
     }
 
-    public void setmTime(String mTime) {
-        this.mTime = mTime;
+    public void setLast_update_date(String last_update_date) {
+        this.last_update_date = last_update_date;
     }
 
-    public String getmTextAuthor() {
-        return mTextAuthor;
+    public String getText_authors() {
+        return text_authors;
     }
 
-    public void setmTextAuthor(String mTextAuthor) {
-        this.mTextAuthor = mTextAuthor;
+    public void setText_authors(String text_authors) {
+        this.text_authors = text_authors;
     }
 
-    public String getmLikeCount() {
-        return mLikeCount;
+    public String getPraisenum() {
+        return praisenum;
     }
 
-    public void setmLikeCount(String mLikeCount) {
-        this.mLikeCount = mLikeCount;
+    public void setPraisenum(String praisenum) {
+        this.praisenum = praisenum;
     }
+
 }

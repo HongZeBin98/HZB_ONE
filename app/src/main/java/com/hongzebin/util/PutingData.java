@@ -51,12 +51,12 @@ public class PutingData {
     public static  void putRead(String url, ReadDetail rd){
         ContentValues mValues = new ContentValues();
         mValues.put("url", url);
-        mValues.put("title", rd.getmTitle());
-        mValues.put("contentHtml", rd.getmContentHtml());
-        mValues.put("authorDesc", rd.getmAuthorDesc());
-        mValues.put("likeCount", rd.getmLikeNum());
-        mValues.put("comCount", rd.getmCommentNum());
-        mValues.put("author", rd.getmAuthor());
+        mValues.put("title", rd.getHp_title());
+        mValues.put("contentHtml", rd.getHp_content());
+        mValues.put("authorDesc", rd.getAuthor().get(0).getDesc());
+        mValues.put("likeCount", rd.getPraisenum());
+        mValues.put("comCount", rd.getCommentnum());
+        mValues.put("author", rd.getAuthor().get(0).getUser_name());
         AddingAndQuerying.getmAddingAndQuerying().add(mValues, "READ");
     }
 
@@ -68,16 +68,17 @@ public class PutingData {
     public static  void putMusic(String url, MusicDetail md){
         ContentValues mValues = new ContentValues();
         mValues.put("url", url);
-        mValues.put("musicName", md.getmMusicName());
-        mValues.put("cover", md.getmCover());
-        mValues.put("title", md.getmTitle());
-        mValues.put("summary", md.getmSummary());
-        mValues.put("contentHtml", md.getmStory());
-        mValues.put("lyric", md.getmLyric());
-        mValues.put("info", md.getmInfo());
-        mValues.put("likeCount", md.getmLikeNum());
-        mValues.put("comCount", md.getmCommentNum());
-        mValues.put("author", md.getmAuthor());
+        mValues.put("musicName", md.getTitle());
+        mValues.put("cover", md.getCover());
+        mValues.put("title", md.getStory_title());
+        mValues.put("summary", md.getStory_summary());
+        mValues.put("contentHtml", md.getStory());
+        mValues.put("lyric", md.getLyric());
+        mValues.put("info", md.getInfo());
+        mValues.put("likeCount", md.getPraisenum());
+        mValues.put("comCount", md.getCommentnum());
+        mValues.put("author", md.getAuthor().getUser_name());
+
         AddingAndQuerying.getmAddingAndQuerying().add(mValues, "MUSIC");
     }
 
@@ -89,11 +90,11 @@ public class PutingData {
     public static  void putVideo(String url, VideoDetail vd){
         ContentValues mValues = new ContentValues();
         mValues.put("url", url);
-        mValues.put("title", vd.getmTitle());
-        mValues.put("contentHtml", vd.getmText());
-        mValues.put("summary", vd.getmSummary());
-        mValues.put("likeCount", vd.getmLikeNum());
-        mValues.put("author", vd.getmUser());
+        mValues.put("title", vd.getTitle());
+        mValues.put("contentHtml", vd.getContent());
+        mValues.put("summary", vd.getSummary());
+        mValues.put("likeCount", vd.getPraisenum());
+        mValues.put("author", vd.getUser().getUser_name());
         AddingAndQuerying.getmAddingAndQuerying().add(mValues, "VIDEO");
     }
 }

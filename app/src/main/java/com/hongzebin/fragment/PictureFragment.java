@@ -21,7 +21,7 @@ import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.ListTurning;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +104,7 @@ public class PictureFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mCount = mAdapter.getCount();
-                mId = mList.get(mList.size() - 1).getmItemId();
+                mId = mList.get(mList.size() - 1).getHpcontent_id();
                 mAddress = ApiConstant.refreshPictureApi(mId);
                 judgeDataExistence(ADD_LOADING, "LIST");
             }
@@ -123,7 +123,7 @@ public class PictureFragment extends Fragment {
         Message message = new Message();
         if (mes == NORMAL_LOADING) {
             for (String x : list) {
-                mList.add(UsingJsonObject.getmUsingJsonObject().chaHuaDetailJson(x));
+                mList.add(UsingGson.getUsingGson().chaHuaDetailGson(x));
             }
             mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
             //异步消息处理，发送消息
@@ -132,14 +132,14 @@ public class PictureFragment extends Fragment {
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
             for (String x : list) {
-                mList.add(UsingJsonObject.getmUsingJsonObject().chaHuaDetailJson(x));
+                mList.add(UsingGson.getUsingGson().chaHuaDetailGson(x));
             }
             mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
             message.what = mes;
             mHandler.sendMessage(message);
         } else if (mes == ADD_LOADING) {
             for (String x : list) {
-                mList.add(UsingJsonObject.getmUsingJsonObject().chaHuaDetailJson(x));
+                mList.add(UsingGson.getUsingGson().chaHuaDetailGson(x));
             }
             message.what = mes;
             mHandler.sendMessage(message);
@@ -155,7 +155,7 @@ public class PictureFragment extends Fragment {
         HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
             @Override
             public void onFinish(Object response) {
-                List<String> list = UsingJsonObject.getmUsingJsonObject().chaHuaIdJson(response.toString());
+                List<String> list = UsingGson.getUsingGson().chaHuaIdJson(response.toString());
                 HttpUtil.sentReqChahua(list, true, new HttpUtil.HttpCallbackListenner() {
                     @Override
                     public void onFinish(Object response) {

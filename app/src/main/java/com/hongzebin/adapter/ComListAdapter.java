@@ -45,10 +45,10 @@ public class ComListAdapter extends ArrayAdapter<Comment> {
             view = convertView;
             viewHolder = (ViewHolder) view.getTag();    //重新获取viewHolder
         }
-        viewHolder.user.setText(com.getmUser());
-        viewHolder.text.setText(com.getmText());
-        viewHolder.likeNum.setText(com.getmLikeNum());
-        viewHolder.time.setText(com.getmTime());
+        viewHolder.user.setText(com.getUser().getUser_name());
+        viewHolder.text.setText(com.getContent());
+        viewHolder.likeNum.setText(com.getPraisenum());
+        viewHolder.time.setText(com.getUpdated_at());
         return view;
     }
 

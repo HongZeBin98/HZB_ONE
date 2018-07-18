@@ -9,7 +9,7 @@ import android.os.SystemClock;
 
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.PutingData;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class AutoUpdateService extends Service {
         HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
             @Override
             public void onFinish(Object response) {
-                List<String> list = UsingJsonObject.getmUsingJsonObject().chaHuaIdJson(response.toString());
+                List<String> list = UsingGson.getUsingGson().chaHuaIdJson(response.toString());
                 HttpUtil.sentReqChahua(list, true, new HttpUtil.HttpCallbackListenner() {
                     @Override
                     public void onFinish(Object response) {

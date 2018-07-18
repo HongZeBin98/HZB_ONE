@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +21,7 @@ import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.List;
 
@@ -106,7 +107,7 @@ public class VideoDetailActivity extends Activity {
             message.what = DETAIL;
             mHandler.sendMessage(message);
         } else {
-            List<Comment> comList = UsingJsonObject.getmUsingJsonObject().commentJson((String) response);
+            List<Comment> comList = UsingGson.getUsingGson().commentGson((String) response);
             mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, comList);
             message.what = COMMENT;
             mHandler.sendMessage(message);
@@ -126,7 +127,7 @@ public class VideoDetailActivity extends Activity {
             public void onFinish(Object response) {
                 Object object;
                 if(mes == DETAIL){
-                    object = UsingJsonObject.getmUsingJsonObject().videoDetailJson((String) response);
+                    object = UsingGson.getUsingGson().videoDetailGson((String) response);
                     PutingData.putVideo(address, (VideoDetail) object);    //加载进数据库
                 }else {
                     object = response;
@@ -137,6 +138,7 @@ public class VideoDetailActivity extends Activity {
 
             @Override
             public void onError(Exception e) {
+                Log.e("VideoDetailActivity", Log.getStackTraceString(e) );
                 Message message = new Message();
                 message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);
@@ -159,11 +161,11 @@ public class VideoDetailActivity extends Activity {
      * 给UI控件传值
      */
     private void putDataToUI() {
-        mTitle.setText(mVideoDetail.getmTitle());
-        mAuthor.setText("文/" + mVideoDetail.getmUser());
-        mLikeNum.setText(mVideoDetail.getmLikeNum());
-        mSummary.setText(mVideoDetail.getmSummary());
-        mText.setText(Html.fromHtml(mVideoDetail.getmText()));
+        mTitle.setText(mVideoDetail.getTitle());
+        mAuthor.setText("文/" + mVideoDetail.getUser().getUser_name());
+        mLikeNum.setText(mVideoDetail.getPraisenum());
+        mSummary.setText(mVideoDetail.getSummary());
+        mText.setText(Html.fromHtml(mVideoDetail.getContent()));
     }
 
     /**
@@ -187,12 +189,7 @@ public class VideoDetailActivity extends Activity {
         if (judge) {
             httpRequest(flag, url);
         } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    realizeAdapter(object, flag);
-                }
-            }).start();
+            realizeAdapter(object, flag);
         }
     }
 }

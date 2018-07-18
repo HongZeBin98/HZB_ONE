@@ -5,10 +5,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.hongzebin.bean.Author;
 import com.hongzebin.bean.MusicDetail;
 import com.hongzebin.bean.ReadDetail;
+import com.hongzebin.bean.User;
 import com.hongzebin.bean.VideoDetail;
 import com.hongzebin.util.OneApplication;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.hongzebin.util.Constant.SAVING_TIME;
 
@@ -60,9 +65,12 @@ public class AddingAndQuerying {
                 String authorDesc = cursor.getString(cursor.getColumnIndex("authorDesc"));
                 String likeCount = cursor.getString(cursor.getColumnIndex("likeCount"));
                 String comCount = cursor.getString(cursor.getColumnIndex("comCount"));
-                String author = cursor.getString(cursor.getColumnIndex("author"));
+                String name = cursor.getString(cursor.getColumnIndex("author"));
+                List<Author> list = new ArrayList<>();
+                Author author = new Author(name, authorDesc);
+                list.add(author);
 
-                ReadDetail readDetail = new ReadDetail(title, author, contentHtml, authorDesc, likeCount, comCount);
+                ReadDetail readDetail = new ReadDetail(title, list, contentHtml, likeCount, comCount);
                 return readDetail;
             } else if (tableName.equals("MUSIC")){
                 String musicName = cursor.getString(cursor.getColumnIndex("musicName"));
@@ -74,7 +82,8 @@ public class AddingAndQuerying {
                 String info = cursor.getString(cursor.getColumnIndex("info"));
                 String likeCount = cursor.getString(cursor.getColumnIndex("likeCount"));
                 String comCount = cursor.getString(cursor.getColumnIndex("comCount"));
-                String author = cursor.getString(cursor.getColumnIndex("author"));
+                String name = cursor.getString(cursor.getColumnIndex("author"));
+                Author author = new Author(name);
 
                 MusicDetail musicDetail = new MusicDetail(musicName, cover, title, summary, contentHtml, lyric, info, likeCount, comCount, author);
                 return musicDetail;
@@ -83,9 +92,10 @@ public class AddingAndQuerying {
                 String contentHtml = cursor.getString(cursor.getColumnIndex("contentHtml"));
                 String summary = cursor.getString(cursor.getColumnIndex("summary"));
                 String likeCount = cursor.getString(cursor.getColumnIndex("likeCount"));
-                String author = cursor.getString(cursor.getColumnIndex("author"));
+                String name = cursor.getString(cursor.getColumnIndex("author"));
+                User user = new User(name);
 
-                VideoDetail videoDetail = new VideoDetail(title, author, summary, contentHtml, likeCount);
+                VideoDetail videoDetail = new VideoDetail(title, user, summary, contentHtml, likeCount);
                 return videoDetail;
             }
         }

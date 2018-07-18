@@ -21,7 +21,7 @@ import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.List;
 
@@ -108,7 +108,7 @@ public class ReadDetailActivity extends Activity {
             message.what = DETAIL;
             mHandler.sendMessage(message);
         } else {
-            List<Comment> comList = UsingJsonObject.getmUsingJsonObject().commentJson((String)response);
+            List<Comment> comList = UsingGson.getUsingGson().commentGson((String)response);
             mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, comList);
             message.what = COMMENT;
             mHandler.sendMessage(message);
@@ -128,7 +128,7 @@ public class ReadDetailActivity extends Activity {
             public void onFinish(Object response) {
                 Object object;
                 if(mes == DETAIL){
-                    object = UsingJsonObject.getmUsingJsonObject().readDetailJson((String) response);
+                    object = UsingGson.getUsingGson().readDetailGson((String) response);
                     PutingData.putRead(address, (ReadDetail) object);    //加载进数据库
                 }else {
                     object = response;
@@ -139,6 +139,7 @@ public class ReadDetailActivity extends Activity {
 
             @Override
             public void onError(Exception e) {
+                Log.e("ReadDetailActivity", Log.getStackTraceString(e) );
                 Message message = new Message();
                 message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);
@@ -162,13 +163,13 @@ public class ReadDetailActivity extends Activity {
      * 给UI控件传值
      */
     public void putDataToUI() {
-        mTitle.setText(mReadDetail.getmTitle());
-        String author = "文/" + mReadDetail.getmAuthor();
+        mTitle.setText(mReadDetail.getHp_title());
+        String author = "文/" + mReadDetail.getAuthor().get(0).getUser_name();
         mAuthor.setText(author);
-        mAuthorDesc.setText(mReadDetail.getmAuthorDesc());
-        mLikeNum.setText(mReadDetail.getmLikeNum());
-        mComNum.setText(mReadDetail.getmCommentNum());
-        mText.setText(Html.fromHtml(mReadDetail.getmContentHtml()));
+        mAuthorDesc.setText(mReadDetail.getAuthor().get(0).getDesc());
+        mLikeNum.setText(mReadDetail.getPraisenum());
+        mComNum.setText(mReadDetail.getCommentnum());
+        mText.setText(Html.fromHtml(mReadDetail.getHp_content()));
     }
 
     /**
@@ -192,12 +193,7 @@ public class ReadDetailActivity extends Activity {
         if (judge) {
             httpRequest(flag, url);
         } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    realizeAdapter(object, flag);
-                }
-            }).start();
+            realizeAdapter(object, flag);
         }
     }
 }

@@ -6,57 +6,59 @@ package com.hongzebin.bean;
  */
 
 public class VideoDetail {
-    private String mTitle;
-    private String mUser;
-    private String mSummary;
-    private String mText;
-    private String mLikeNum;
 
-    public VideoDetail(String mTitle, String mUser, String mSummary, String mText, String mLikeNum) {
-        this.mTitle = mTitle;
-        this.mUser = mUser;
-        this.mSummary = mSummary;
-        this.mText = mText;
-        this.mLikeNum = mLikeNum;
+    private String title;
+    private User user;
+    private String summary;
+    private String content;
+    private String praisenum;
+
+    public VideoDetail(String title, User user, String summary, String content, String praisenum) {
+        this.title = title;
+        this.user = user;
+        this.summary = summary;
+        this.content = content;
+        this.praisenum = praisenum;
     }
 
-    public String getmLikeNum() {
-        return mLikeNum;
+    public String getTitle() {
+        return title;
+
     }
 
-    public void setmLikeNum(String mLikeNum) {
-        this.mLikeNum = mLikeNum;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getmTitle() {
-        return mTitle;
+    public User getUser() {
+        return user;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public String getmUser() {
-        return mUser;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setmUser(String mUser) {
-        this.mUser = mUser;
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
-    public String getmSummary() {
-        return mSummary;
+    public String getContent() {
+        return content;
     }
 
-    public void setmSummary(String mSummary) {
-        this.mSummary = mSummary;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getmText() {
-        return mText;
+    public String getPraisenum() {
+        return praisenum;
     }
 
-    public void setmText(String mText) {
-        this.mText = mText;
+    public void setPraisenum(String praisenum) {
+        this.praisenum = praisenum;
     }
 }

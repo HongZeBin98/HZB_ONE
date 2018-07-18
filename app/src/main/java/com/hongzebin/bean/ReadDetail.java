@@ -1,72 +1,70 @@
 package com.hongzebin.bean;
 
+import java.util.List;
+
 /**阅读详细
  * Created by 洪泽彬
  */
 
 public class ReadDetail {
-    private String mTitle;
-    private String mAuthor;
-    private String mContentHtml;
-    private String mAuthorDesc;
-    private String mLikeNum;
-    private String mCommentNum;
 
-    public ReadDetail(String mTitle, String mAuthor, String mContentHtml, String mAuthorDesc,
-                      String mLikeNum, String mCommentNum) {
-        this.mTitle = mTitle;
-        this.mAuthor = mAuthor;
-        this.mContentHtml = mContentHtml;
-        this.mAuthorDesc = mAuthorDesc;
-        this.mLikeNum = mLikeNum;
-        this.mCommentNum = mCommentNum;
+    private String hp_title;
+    private List<Author> author;
+    private String hp_content;
+    private String praisenum;
+    private String commentnum;
+
+
+    public ReadDetail(String hp_title, List<Author> author, String hp_content, String praisenum, String commentnum) {
+        this.hp_title = hp_title;
+        this.author = author;
+        this.hp_content = hp_content;
+        this.praisenum = praisenum;
+        this.commentnum = commentnum;
     }
 
-    public String getmTitle() {
-        return mTitle;
+    public ReadDetail(String hp_title) {
+        this.hp_title = hp_title;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
+    public String getHp_title() {
+        return hp_title;
     }
 
-    public String getmAuthor() {
-        return mAuthor;
+    public void setHp_title(String hp_title) {
+        this.hp_title = hp_title;
     }
 
-    public void setmAuthor(String mAuthor) {
-        this.mAuthor = mAuthor;
+    public List<Author> getAuthor() {
+        return author;
     }
 
-    public String getmContentHtml() {
-        return mContentHtml;
+    public void setAuthor(List<Author> author) {
+        this.author = author;
     }
 
-    public void setmContentHtml(String mContentHtml) {
-        this.mContentHtml = mContentHtml;
+    public String getHp_content() {
+        return hp_content;
     }
 
-    public String getmAuthorDesc() {
-        return mAuthorDesc;
+    public void setHp_content(String hp_content) {
+        this.hp_content = hp_content;
     }
 
-    public void setmAuthorDesc(String mAuthorDesc) {
-        this.mAuthorDesc = mAuthorDesc;
+    public String getPraisenum() {
+        return praisenum;
     }
 
-    public String getmLikeNum() {
-        return mLikeNum;
+    public void setPraisenum(String praisenum) {
+        this.praisenum = praisenum;
     }
 
-    public void setmLikeNum(String mLikeNum) {
-        this.mLikeNum = mLikeNum;
+    public String getCommentnum() {
+        return commentnum;
     }
 
-    public String getmCommentNum() {
-        return mCommentNum;
+    public void setCommentnum(String commentnum) {
+        this.commentnum = commentnum;
     }
 
-    public void setmCommentNum(String mCommentNum) {
-        this.mCommentNum = mCommentNum;
-    }
 }

@@ -76,13 +76,14 @@ public class PictureListAdapter extends BaseAdapter {
         }
         //给图片控件控件设置一个Tag
         viewHolder.picture.setImageResource(R.drawable.picturefail);
-        viewHolder.picture.setTag(chd.getmImgURL());
-        new DownloadImageForListView(mListView).execute(chd.getmImgURL());
-        viewHolder.authorText.setText(chd.getmTextAuthor());
-        viewHolder.text.setText(chd.getmText());
-        viewHolder.pictureText.setText(chd.getmPictureText());
-        viewHolder.time.setText(chd.getmTime());
-        viewHolder.number.setText(chd.getmLikeCount());
+        String img = chd.getHp_img_url();
+        viewHolder.picture.setTag(img);
+        new DownloadImageForListView(mListView).execute(img);
+        viewHolder.authorText.setText(chd.getText_authors());
+        viewHolder.text.setText(chd.getHp_content());
+        viewHolder.pictureText.setText(chd.getHp_author());
+        viewHolder.time.setText(chd.getLast_update_date());
+        viewHolder.number.setText(chd.getPraisenum());
         return view;
     }
 

@@ -25,7 +25,7 @@ import com.hongzebin.service.DownloadService;
 import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.HttpUtil;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,13 +159,13 @@ public class AllFragment extends Fragment implements View.OnClickListener {
         HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
             @Override
             public void onFinish(Object response) {
-                List<String> list = UsingJsonObject.getmUsingJsonObject().chaHuaIdJson(response.toString());
+                List<String> list = UsingGson.getUsingGson().chaHuaIdJson(response.toString());
                 HttpUtil.sentReqChahua(list, false, new HttpUtil.HttpCallbackListenner() {
                     @Override
                     public void onFinish(Object response) {
                         List<String> listStr = new ArrayList<>();
                         for (String x : (List<String>) response) {
-                            listStr.add(UsingJsonObject.getmUsingJsonObject().chaHuaURLJson(x));
+                            listStr.add(UsingGson.getUsingGson().chaHuaURLJson(x));
                         }
                         realizeAdapter(listStr);
                     }

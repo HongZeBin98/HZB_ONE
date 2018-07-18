@@ -22,7 +22,7 @@ import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +103,7 @@ public class MusicFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mCount = mAdapter.getCount();
-                mId = mList.get(mList.size() - 1).getmId();
+                mId = mList.get(mList.size() - 1).getId();
                 mAddress = ApiConstant.refreshMusicApi(mId);
                 judgeDataExistence(ADD_LOADING, "LIST");
             }
@@ -114,7 +114,7 @@ public class MusicFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TypeOutline to = mList.get(position);
-                MusicDetailActivity.startMusicDetail(getActivity(), to.getmItemId());
+                MusicDetailActivity.startMusicDetail(getActivity(), to.getItem_id());
             }
         });
         return mView;
@@ -129,19 +129,19 @@ public class MusicFragment extends Fragment {
     private void realizeAdapter(String response, int mes) {
         Message message = new Message();
         if (mes == NORMAL_LOADING) {
-            mList.addAll(UsingJsonObject.getmUsingJsonObject().outlineJson(response, true));
+            mList.addAll(UsingGson.getUsingGson().outlineGson(response));
             mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
             //异步消息处理，发送消息
             message.what = mes;
             mHandler.sendMessage(message);
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
-            mList.addAll(UsingJsonObject.getmUsingJsonObject().outlineJson(response, true));
+            mList.addAll(UsingGson.getUsingGson().outlineGson(response));
             mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
             message.what = mes;
             mHandler.sendMessage(message);
         } else if (mes == ADD_LOADING) {
-            mList.addAll(UsingJsonObject.getmUsingJsonObject().outlineJson(response, true));
+            mList.addAll(UsingGson.getUsingGson().outlineGson(response));
             message.what = mes;
             mHandler.sendMessage(message);
         }
@@ -180,12 +180,7 @@ public class MusicFragment extends Fragment {
         if ((mJsonData = (String)AddingAndQuerying.getmAddingAndQuerying().query(mAddress, tableName)) == null) {
             httpRequest(mes, mAddress);
         } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    realizeAdapter(mJsonData, mes);
-                }
-            }).start();
+            realizeAdapter(mJsonData, mes);
         }
     }
 }

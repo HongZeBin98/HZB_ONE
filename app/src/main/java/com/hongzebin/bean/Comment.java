@@ -6,49 +6,47 @@ package com.hongzebin.bean;
  */
 
 public class Comment {
-    private String mUser;
-    private String mText;
-    private String mTime;
-    private String mLikeNum;
+    private User user;
+    private String content;
+    private String updated_at;
+    private String praisenum;
 
-    public Comment(String mUser, String mText, String mTime,
-                   String mLikeNum) {
-        this.mUser = mUser;
-        this.mText = mText;
-        this.mTime = mTime;
-        this.mLikeNum = mLikeNum;
+    public Comment(User user, String content, String updated_at, String praisenum) {
+        this.user = user;
+        this.content = content;
+        this.updated_at = updated_at;
+        this.praisenum = praisenum;
     }
 
-    public String getmUser() {
-        return mUser;
+    public User getUser() {
+        return user;
     }
 
-    public void setmUser(String mUser) {
-        this.mUser = mUser;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public String getmText() {
-        return mText;
+    public String getContent() {
+        return content;
     }
 
-    public void setmText(String mText) {
-        this.mText = mText;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getmTime() {
-        return mTime;
+    public String getUpdated_at() {
+        return updated_at;
     }
 
-    public void setmTime(String mTime) {
-        this.mTime = mTime;
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
     }
 
-    public String getmLikeNum() {
-        return mLikeNum;
+    public String getPraisenum() {
+        return praisenum;
     }
 
-    public void setmLikeNum(String mLikeNum) {
-        this.mLikeNum = mLikeNum;
+    public void setPraisenum(String praisenum) {
+        this.praisenum = praisenum;
     }
-
 }

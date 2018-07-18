@@ -16,9 +16,9 @@ public class ApiConstant {
     public static final String PICTURE_ADDRESS = "http://v3.wufazhuce.com:8000/api/hp/idlist/0?version=3.5.0&platform=android";
 
     /**
-     * 通过id得到相应的音乐api
+     * 通过id得到相应的音乐列表api
      * @param id 需要添加的
-     * @return 添加了新id的音乐api
+     * @return 添加了新id的音乐列表api
      */
     public static String refreshMusicApi(String id){
         String musicAddress = "http://v3.wufazhuce.com:8000/api/channel/music/more/" + id + "?platform=android";
@@ -26,9 +26,9 @@ public class ApiConstant {
     }
 
     /**
-     * 通过id得到相应的阅读api
+     * 通过id得到相应的阅读列表api
      * @param id 需要添加的id
-     * @return 添加了新id的阅读api
+     * @return 添加了新id的阅读列表api
      */
     public static String refreshReadApi(String id){
         String readAddress = "http://v3.wufazhuce.com:8000/api/channel/reading/more/" + id + "?channel=wdj&version=4.0.2&platform=android";
@@ -36,9 +36,9 @@ public class ApiConstant {
     }
 
     /**
-     * 通过id得到相应的影视api
+     * 通过id得到相应的影视列表api
      * @param id 需要添加的id
-     * @return 添加了新id的影视api
+     * @return 添加了新id的影视列表api
      */
     public static String refreshVideoApi(String id){
         String videoAddress = "http://v3.wufazhuce.com:8000/api/channel/movie/more/" + id + "?platform=android";
@@ -46,9 +46,9 @@ public class ApiConstant {
     }
 
     /**
-     * 通过id得到相应的插画api
+     * 通过id得到相应的插画列表api
      * @param id 需要添加的id
-     * @return 添加了新id的插画api
+     * @return 添加了新id的插画列表api
      */
     public static String refreshPictureApi(String id){
         String pictureAddress = "http://v3.wufazhuce.com:8000/api/hp/idlist/" + id + "?version=3.5.0&platform=android";
@@ -83,6 +83,16 @@ public class ApiConstant {
     public static String getVideoAddress(String itemId){
         String VideoDetailAddress = "http://v3.wufazhuce.com:8000/api/movie/" + itemId + "/story/1/0?platform=android";
         return VideoDetailAddress;
+    }
+
+    /**
+     * 通过itemId得到相应的插画api
+     * @param itemId 需要添加的itemId
+     * @return 添加了新itemId的插画api
+     */
+    public static String getPictureAddress(String itemId){
+        String PictureDetailAddress = "http://v3.wufazhuce.com:8000/api/hp/detail/" + itemId + "?version=3.5.0&platform=android";
+        return PictureDetailAddress;
     }
 
     /**

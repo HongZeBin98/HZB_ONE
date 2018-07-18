@@ -6,108 +6,113 @@ package com.hongzebin.bean;
  */
 
 public class MusicDetail {
-    private String mMusicName;
-    private String mCover;
-    private String mTitle;
-    private String mSummary;
-    private String mStory;
-    private String mLyric;
-    private String mInfo;
-    private String mLikeNum;
-    private String mCommentNum;
-    private String mAuthor;
 
-    public MusicDetail(String mAuthor, String mMusicName, String mCover, String mTitle, String mSummary,
-                       String mStory, String mLyric, String mInfo, String mLikeNum, String mCommentNum) {
-        this.mAuthor = mAuthor;
-        this.mMusicName = mMusicName;
-        this.mCover = mCover;
-        this.mTitle = mTitle;
-        this.mSummary = mSummary;
-        this.mStory = mStory;
-        this.mLyric = mLyric;
-        this.mInfo = mInfo;
-        this.mLikeNum = mLikeNum;
-        this.mCommentNum = mCommentNum;
+    private String title;
+    private String cover;
+    private String story_title;
+    private String story_summary;
+    private String story;
+    private String lyric;
+    private String info;
+    private String praisenum;
+    private String commentnum;
+    private Author author;
+
+    public MusicDetail(String title, String cover, String story_title, String story_summary, String story,
+                       String lyric, String info, String praisenum, String commentnum, Author author) {
+        this.title = title;
+        this.cover = cover;
+        this.story_title = story_title;
+        this.story_summary = story_summary;
+        this.story = story;
+        this.lyric = lyric;
+        this.info = info;
+        this.praisenum = praisenum;
+        this.commentnum = commentnum;
+        this.author = author;
     }
 
-    public String getmAuthor() {
-        return mAuthor;
+    public String getTitle() {
+        return title;
     }
 
-    public void setmAuthor(String mAuthor) {
-        this.mAuthor = mAuthor;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getmMusicName() {
-        return mMusicName;
+    public String getCover() {
+        return cover;
     }
 
-    public void setmMusicName(String mMusicName) {
-        this.mMusicName = mMusicName;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
-    public String getmCover() {
-        return mCover;
+    public String getStory_title() {
+        return story_title;
     }
 
-    public void setmCover(String mCover) {
-        this.mCover = mCover;
+    public void setStory_title(String story_title) {
+        this.story_title = story_title;
     }
 
-    public String getmTitle() {
-        return mTitle;
+    public String getStory_summary() {
+        return story_summary;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
+    public void setStory_summary(String story_summary) {
+        this.story_summary = story_summary;
     }
 
-    public String getmSummary() {
-        return mSummary;
+    public String getStory() {
+        return story;
     }
 
-    public void setmSummary(String mSummary) {
-        this.mSummary = mSummary;
+    public void setStory(String story) {
+        this.story = story;
     }
 
-    public String getmStory() {
-        return mStory;
+    public String getLyric() {
+        return lyric;
     }
 
-    public void setmStory(String mStory) {
-        this.mStory = mStory;
+    public void setLyric(String lyric) {
+        this.lyric = lyric;
     }
 
-    public String getmLyric() {
-        return mLyric;
+    public String getInfo() {
+        return info;
     }
 
-    public void setmLyric(String mLyric) {
-        this.mLyric = mLyric;
+    public void setInfo(String info) {
+        this.info = info;
     }
 
-    public String getmInfo() {
-        return mInfo;
+    public String getPraisenum() {
+        return praisenum;
     }
 
-    public void setmInfo(String mInfo) {
-        this.mInfo = mInfo;
+    public void setPraisenum(String praisenum) {
+        this.praisenum = praisenum;
     }
 
-    public String getmLikeNum() {
-        return mLikeNum;
+    public String getCommentnum() {
+        return commentnum;
     }
 
-    public void setmLikeNum(String mLikeNum) {
-        this.mLikeNum = mLikeNum;
+    public void setCommentnum(String commentnum) {
+        this.commentnum = commentnum;
     }
 
-    public String getmCommentNum() {
-        return mCommentNum;
+    public Author getAuthor() {
+        return author;
     }
 
-    public void setmCommentNum(String mCommentNum) {
-        this.mCommentNum = mCommentNum;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
+
+
+
+
 }

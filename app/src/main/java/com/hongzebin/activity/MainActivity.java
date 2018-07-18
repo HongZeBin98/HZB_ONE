@@ -22,10 +22,12 @@ import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.GlobalTools;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
-import com.hongzebin.util.UsingJsonObject;
+import com.hongzebin.util.UsingGson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.hongzebin.util.ApiConstant.READ_ADDRESS;
 
 /**
  * 主界面，通过viewpager有one和all页面
@@ -45,7 +47,7 @@ public class MainActivity extends FragmentActivity {
         startService(intent);
         //判断是否联网，若联网才有通知
         if(GlobalTools.isNetworkAvailable(OneApplication.getmContext())){
-            httpRequest("http://v3.wufazhuce.com:8000/api/channel/reading/more/0?channel=wdj&version=4.0.2&platform=android");
+            httpRequest(READ_ADDRESS);
         }
 
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -77,16 +79,16 @@ public class MainActivity extends FragmentActivity {
                 intent.putExtra("number", 1);
                 PendingIntent pi = PendingIntent.getActivities(context, 0, new Intent[]{intent}, 0);
 
-                TypeOutline to =  UsingJsonObject.getmUsingJsonObject().outlineJson((String)response, false).get(0);
-                BitmapDrawable bd = (BitmapDrawable) new DownloadImage().loadImageFromNetwork(to.getmImgURL());
+                TypeOutline to =  UsingGson.getUsingGson().outlineson((String)response).get(0);
+                BitmapDrawable bd = (BitmapDrawable) new DownloadImage().loadImageFromNetwork(to.getImg_url());
                 //设置通知
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 Notification notification = new NotificationCompat.Builder(OneApplication.getmContext())
                         .setLargeIcon(bd.getBitmap())
-                        .setContentTitle(to.getmTitle())
-                        .setContentText(to.getmForward())
+                        .setContentTitle(to.getTitle())
+                        .setContentText(to.getForward())
                         .setSmallIcon(R.mipmap.notification)
-                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)G
                         .setContentIntent(pi)
                         .setAutoCancel(true)
                         .build();

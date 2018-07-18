@@ -12,7 +12,7 @@ import com.hongzebin.util.OneApplication;
 import java.util.List;
 
 /**
- * viewpager适配器，能区别主界面和类型界面
+ * viewpager适配器
  * Created by 洪泽彬
  */
 
