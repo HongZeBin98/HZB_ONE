@@ -79,7 +79,7 @@ public class MainActivity extends FragmentActivity {
                 intent.putExtra("number", 1);
                 PendingIntent pi = PendingIntent.getActivities(context, 0, new Intent[]{intent}, 0);
 
-                TypeOutline to =  UsingGson.getUsingGson().outlineson((String)response).get(0);
+                TypeOutline to =  UsingGson.getUsingGson().outlineGson((String)response).get(0);
                 BitmapDrawable bd = (BitmapDrawable) new DownloadImage().loadImageFromNetwork(to.getImg_url());
                 //设置通知
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -88,7 +88,7 @@ public class MainActivity extends FragmentActivity {
                         .setContentTitle(to.getTitle())
                         .setContentText(to.getForward())
                         .setSmallIcon(R.mipmap.notification)
-                        .setDefaults(NotificationCompat.DEFAULT_ALL)G
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
                         .setContentIntent(pi)
                         .setAutoCancel(true)
                         .build();

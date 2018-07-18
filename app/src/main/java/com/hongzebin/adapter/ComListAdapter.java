@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hongzebin.R;
@@ -17,23 +19,40 @@ import java.util.List;
  * Created by 洪泽彬
  */
 
-public class ComListAdapter extends ArrayAdapter<Comment> {
-
+public class ComListAdapter extends BaseAdapter {
+    private LayoutInflater mInflater;
     private int mResourceId;
+    private List<Comment> mObjects;
 
     public ComListAdapter(Context context, int textViewResourceId, List<Comment> objects) {
-        super(context, textViewResourceId, objects);
         mResourceId = textViewResourceId;
+        mObjects = objects;
+        mInflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public int getCount() {
+        return mObjects.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return mObjects.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Comment com = getItem(position);
+        Comment com = mObjects.get(position);
         View view;
         ViewHolder viewHolder;
         //通过convertView对之前加载好的布局进行缓存
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(mResourceId, parent,
+            view = mInflater.inflate(mResourceId, parent,
                     false);  //false:只为附布局中声明的layout属性生效
             viewHolder = new ViewHolder();
             viewHolder.user = (TextView) view.findViewById(R.id.com_user);
