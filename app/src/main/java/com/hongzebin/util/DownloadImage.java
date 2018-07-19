@@ -44,8 +44,8 @@ public class DownloadImage extends AsyncTask<String, Void, Drawable> {
         Drawable drawable = null;
         try {
             drawable = Drawable.createFromStream(new URL(url).openStream(), "image.jpg");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e("DownloadImage", Log.getStackTraceString(e) );
         }
         if (drawable == null) {
             Log.d("test", "null drawable");

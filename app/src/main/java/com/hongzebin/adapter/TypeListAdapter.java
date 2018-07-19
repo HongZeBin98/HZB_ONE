@@ -11,7 +11,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hongzebin.R;
-import com.hongzebin.bean.Author;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.util.DownloadImageForListView;
 

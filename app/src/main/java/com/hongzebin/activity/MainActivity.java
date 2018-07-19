@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 
+import com.android.volley.VolleyError;
 import com.hongzebin.R;
 import com.hongzebin.adapter.ViewPagerAdapter;
 import com.hongzebin.bean.TypeOutline;
@@ -37,6 +38,7 @@ public class MainActivity extends FragmentActivity {
     private List<String> mTitleList;
     private List<Fragment> mFragmentList;
     private ViewPager mViewPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,33 +72,38 @@ public class MainActivity extends FragmentActivity {
      * @param address 请求的URL
      */
     private void httpRequest(final String address) {
-        HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
+        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
             @Override
             public void onFinish(Object response) {
                 Context context = OneApplication.getmContext();
                 //设置通知被点击后打开的页面
                 Intent intent = new Intent(context, TypeActivity.class);
                 intent.putExtra("number", 1);
-                PendingIntent pi = PendingIntent.getActivities(context, 0, new Intent[]{intent}, 0);
+                final PendingIntent pi = PendingIntent.getActivities(context, 0, new Intent[]{intent}, 0);
 
-                TypeOutline to =  UsingGson.getUsingGson().outlineGson((String)response).get(0);
-                BitmapDrawable bd = (BitmapDrawable) new DownloadImage().loadImageFromNetwork(to.getImg_url());
-                //设置通知
-                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                Notification notification = new NotificationCompat.Builder(OneApplication.getmContext())
-                        .setLargeIcon(bd.getBitmap())
-                        .setContentTitle(to.getTitle())
-                        .setContentText(to.getForward())
-                        .setSmallIcon(R.mipmap.notification)
-                        .setDefaults(NotificationCompat.DEFAULT_ALL)
-                        .setContentIntent(pi)
-                        .setAutoCancel(true)
-                        .build();
-                manager.notify(2, notification);    //启动通知
+                final TypeOutline to =  UsingGson.getUsingGson().outlineGson((String)response).get(0);
+                new Thread(){
+                    @Override
+                    public void run(){
+                        BitmapDrawable bd = (BitmapDrawable) new DownloadImage().loadImageFromNetwork(to.getImg_url());
+                        //设置通知
+                        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        Notification notification = new NotificationCompat.Builder(OneApplication.getmContext())
+                                .setLargeIcon(bd.getBitmap())
+                                .setContentTitle(to.getTitle())
+                                .setContentText(to.getForward())
+                                .setSmallIcon(R.mipmap.notification)
+                                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                                .setContentIntent(pi)
+                                .setAutoCancel(true)
+                                .build();
+                        manager.notify(2, notification);    //启动通知
+                    }
+                }.start();
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(VolleyError e) {
             }
         });
     }

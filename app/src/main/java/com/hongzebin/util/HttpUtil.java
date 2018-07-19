@@ -1,5 +1,13 @@
 package com.hongzebin.util;
 
+import android.util.Log;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,10 +26,10 @@ public class HttpUtil {
     /**
      * 设置接口,回调,里面有成功和失败的后的做法
      */
-    public interface HttpCallbackListenner {
+    public interface HttpCallbackListener {
         void onFinish(Object obj) throws Exception;
 
-        void onError(Exception e);
+        void onError(VolleyError e);
     }
 
     /**
@@ -30,46 +38,27 @@ public class HttpUtil {
      * @param address  请求URL
      * @param listener 回调监听
      */
-    public static void sentHttpRequest(final String address, final HttpCallbackListenner listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                BufferedReader reader = null;
-                try {
-                    URL url = new URL(address);
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");     //请求方式为GET
-                    connection.setConnectTimeout(2500);     //连接超时范围
-                    connection.setReadTimeout(2500);        //连接读取超时范围
-                    InputStream in = connection.getInputStream();
-                    reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    if (listener != null) {
-                        listener.onFinish(response.toString());
-                    }
-                } catch (Exception e) {
-                    if (listener != null) {
-                        listener.onError(e);
-                    }
-                } finally {
-                    if (reader != null) {
+    public static void sentHttpRequest(final String address, RequestQueue queue, final HttpCallbackListener listener) {
+        if (queue == null) {
+            queue = Volley.newRequestQueue(OneApplication.getmContext());
+        }
+        StringRequest stringRequest = new StringRequest(address,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
                         try {
-                            reader.close();
-                        } catch (IOException e) {
+                            listener.onFinish(s);
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                listener.onError(volleyError);
             }
-        }).start();
+        });
+        queue.add(stringRequest);
     }
 
     /**
@@ -79,51 +68,41 @@ public class HttpUtil {
      * @param flag     区别不同情况获取不同数量
      * @param listener 回调监听
      */
-    public static void sentReqChahua(final List<String> list, final boolean flag, final HttpCallbackListenner listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                BufferedReader reader = null;
-                List<String> chdList = new ArrayList<>();
-                int size = 5;
-                if (flag) {
-                    size = list.size();
-                }
-                try {
-                    for (int i = 0; i < size; i++) {
-                        URL url = new URL(list.get(i));
-                        connection = (HttpURLConnection) url.openConnection();
-                        connection.setRequestMethod("GET");
-                        connection.setConnectTimeout(8000);
-                        connection.setReadTimeout(8000);
-                        InputStream in = connection.getInputStream();
-                        reader = new BufferedReader(new InputStreamReader(in));
-                        StringBuilder response = new StringBuilder();
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            response.append(line);
-                        }
-                        chdList.add(response.toString());
-                    }
-                    if (listener != null) {
-                        listener.onFinish(chdList);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
+    public static void sentReqPicture(final List<String> list, RequestQueue queue, final boolean flag, final HttpCallbackListener listener) {
+
+        final List<String> chdList = new ArrayList<>();
+        int size = 5;
+        if (flag) {
+            size = list.size();
+        }
+        boolean sw = false;
+        for (int i = 0; i < size; i++) {
+            if(i == size -1){
+                sw = true;
             }
-        }).start();
+            final boolean finalSw = sw;
+            StringRequest stringRequest = new StringRequest(list.get(i),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String s) {
+                            chdList.add(s);
+                            if (finalSw){
+                                try {
+                                    listener.onFinish(chdList);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    listener.onError(volleyError);
+                }
+            });
+            queue.add(stringRequest);
+        }
+
     }
 }
+

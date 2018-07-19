@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.hongzebin.R;
 import com.hongzebin.activity.MusicDetailActivity;
 import com.hongzebin.adapter.TypeListAdapter;
@@ -155,7 +156,7 @@ public class MusicFragment extends Fragment {
      */
     private void httpRequest(final int mes, final String address) {
         //http请求后解析得到列表需要的信息
-        HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
+        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
             @Override
             public void onFinish(Object response) {
                 PutingData.putJson(address, (String) response);    //加载进数据库
@@ -163,7 +164,7 @@ public class MusicFragment extends Fragment {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(VolleyError e) {
                 Message message = new Message();
                 message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);

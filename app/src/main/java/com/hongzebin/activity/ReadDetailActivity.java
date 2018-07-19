@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.hongzebin.R;
 import com.hongzebin.adapter.ComListAdapter;
 import com.hongzebin.bean.Comment;
@@ -123,7 +124,7 @@ public class ReadDetailActivity extends Activity {
      */
     private void httpRequest(final int mes, final String address) {
         //http请求后解析得到列表需要的信息
-        HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
+        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
             @Override
             public void onFinish(Object response) {
                 Object object;
@@ -138,7 +139,7 @@ public class ReadDetailActivity extends Activity {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(VolleyError e) {
                 Log.e("ReadDetailActivity", Log.getStackTraceString(e) );
                 Message message = new Message();
                 message.what = NONETWORK_REMIND;

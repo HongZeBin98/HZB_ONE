@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.hongzebin.R;
 import com.hongzebin.activity.TypeActivity;
 import com.hongzebin.adapter.SowingMapAdapter;
@@ -40,6 +44,7 @@ import static com.hongzebin.util.Constant.NORMAL_LOADING;
 public class AllFragment extends Fragment implements View.OnClickListener {
 
     private ViewPager mViewPager;
+    private RequestQueue mQueue;
     private Button mReadBtn;
     private Button mPictureBtn;
     private Button mMusicBtn;
@@ -73,7 +78,7 @@ public class AllFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        mQueue = Volley.newRequestQueue(OneApplication.getmContext());
         mImageList = new ArrayList<>();
         mView = inflater.inflate(R.layout.all, container, false);
         Intent intent = new Intent(context,  DownloadService.class);
@@ -133,21 +138,26 @@ public class AllFragment extends Fragment implements View.OnClickListener {
      *
      * @param list 图片的url容器
      */
-    private void realizeAdapter(List<String> list) {
-        ImageView iv;
-        for (String x : list) {
-            Drawable drawable = new DownloadImage().loadImageFromNetwork(x);
-            iv = new ImageView(OneApplication.getmContext());
-            iv.setImageDrawable(drawable);
-            iv.setScaleType(ImageView.ScaleType.FIT_XY);    //使图片铺满
-            mImageList.add(iv);
-        }
-        //配置轮播图适配器
-        mAdapter = new SowingMapAdapter(mImageList);
-        //发送消息
-        Message message = new Message();
-        message.what = NORMAL_LOADING;
-        mHandler.sendMessage(message);
+    private void realizeAdapter(final List<String> list) {
+        new Thread(){
+            @Override
+            public void run(){
+                ImageView iv;
+                for (String x : list) {
+                    Drawable drawable = new DownloadImage().loadImageFromNetwork(x);
+                    iv = new ImageView(OneApplication.getmContext());
+                    iv.setImageDrawable(drawable);
+                    iv.setScaleType(ImageView.ScaleType.FIT_XY);    //使图片铺满
+                    mImageList.add(iv);
+                }
+                //配置轮播图适配器
+                mAdapter = new SowingMapAdapter(mImageList);
+                //发送消息
+                Message message = new Message();
+                message.what = NORMAL_LOADING;
+                mHandler.sendMessage(message);
+            }
+        }.start();
     }
 
     /**
@@ -156,27 +166,28 @@ public class AllFragment extends Fragment implements View.OnClickListener {
      * @param address 请求的URL
      */
     private void httpRequest(final String address) {
-        HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
+        HttpUtil.sentHttpRequest(address, mQueue, new HttpUtil.HttpCallbackListener() {
             @Override
             public void onFinish(Object response) {
                 List<String> list = UsingGson.getUsingGson().chaHuaIdJson(response.toString());
-                HttpUtil.sentReqChahua(list, false, new HttpUtil.HttpCallbackListenner() {
+                HttpUtil.sentReqPicture(list, mQueue,false, new HttpUtil.HttpCallbackListener() {
                     @Override
                     public void onFinish(Object response) {
                         List<String> listStr = new ArrayList<>();
                         for (String x : (List<String>) response) {
-                            listStr.add(UsingGson.getUsingGson().chaHuaURLJson(x));
+                            String str = UsingGson.getUsingGson().chaHuaURLJson(x);
+                            listStr.add(str);
                         }
                         realizeAdapter(listStr);
                     }
                     @Override
-                    public void onError(Exception e) {
+                    public void onError(VolleyError e) {
                         e.printStackTrace();
                     }
                 });
             }
             @Override
-            public void onError(Exception e) {
+            public void onError(VolleyError e) {
                 e.printStackTrace();
             }
         });

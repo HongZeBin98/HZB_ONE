@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.hongzebin.R;
 import com.hongzebin.adapter.ComListAdapter;
 import com.hongzebin.bean.Comment;
@@ -36,7 +37,7 @@ import static com.hongzebin.util.Constant.NONETWORK_REMIND;
  * Created by 洪泽彬
  */
 
-public class MusicDetailActivity extends Activity {
+public class MusicDetailActivity extends Activity{
     private ComListAdapter mComAdapter = null;
     private MusicDetail mMusicDetail;
     private String mDetailURL;
@@ -128,7 +129,7 @@ public class MusicDetailActivity extends Activity {
      * @param address 请求的url
      */
     private void httpRequest(final int mes, final String address) {
-        HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
+        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
             @Override
             public void onFinish(Object response) {
                 Object object;
@@ -143,7 +144,7 @@ public class MusicDetailActivity extends Activity {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(VolleyError e) {
                 Message message = new Message();
                 message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);

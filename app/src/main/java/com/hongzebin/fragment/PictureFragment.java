@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.hongzebin.R;
 import com.hongzebin.adapter.PictureListAdapter;
 import com.hongzebin.bean.PictureDetail;
@@ -38,6 +42,7 @@ import static com.hongzebin.util.Constant.REFRESH_LOADING;
  * Created by 洪泽彬
  */
 public class PictureFragment extends Fragment {
+    private RequestQueue mQueue;
     private List<PictureDetail> mList;
     private PictureListAdapter mAdapter;
     private SwipeRefreshLayout mRefresh;
@@ -54,6 +59,7 @@ public class PictureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mId = "0";
+        mQueue = Volley.newRequestQueue(OneApplication.getmContext());
         mAddress = ApiConstant.refreshPictureApi(mId);
         mList = new ArrayList<>();
         mView = inflater.inflate(R.layout.type, container, false);
@@ -152,11 +158,11 @@ public class PictureFragment extends Fragment {
      * @param mes 区别不同情况
      */
     private void httpRequest(final int mes, final String address) {
-        HttpUtil.sentHttpRequest(address, new HttpUtil.HttpCallbackListenner() {
+        HttpUtil.sentHttpRequest(address, mQueue, new HttpUtil.HttpCallbackListener() {
             @Override
             public void onFinish(Object response) {
                 List<String> list = UsingGson.getUsingGson().chaHuaIdJson(response.toString());
-                HttpUtil.sentReqChahua(list, true, new HttpUtil.HttpCallbackListenner() {
+                HttpUtil.sentReqPicture(list, mQueue,true, new HttpUtil.HttpCallbackListener() {
                     @Override
                     public void onFinish(Object response) {
                         List<String> listStr = (List<String>) response;
@@ -166,14 +172,14 @@ public class PictureFragment extends Fragment {
                     }
 
                     @Override
-                    public void onError(Exception e) {
+                    public void onError(VolleyError e) {
                         e.printStackTrace();
                     }
                 });
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(VolleyError e) {
                 Message message = new Message();
                 message.what = NONETWORK_REMIND;
                 mHandler.sendMessage(message);
