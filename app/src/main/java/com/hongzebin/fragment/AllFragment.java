@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -25,6 +26,9 @@ import com.android.volley.toolbox.Volley;
 import com.hongzebin.R;
 import com.hongzebin.activity.TypeActivity;
 import com.hongzebin.adapter.SowingMapAdapter;
+import com.hongzebin.bean.PictureDetail;
+import com.hongzebin.model.AllCallback;
+import com.hongzebin.model.AllModel;
 import com.hongzebin.service.DownloadService;
 import com.hongzebin.util.DownloadImage;
 import com.hongzebin.util.OneApplication;
@@ -166,29 +170,15 @@ public class AllFragment extends Fragment implements View.OnClickListener {
      * @param address 请求的URL
      */
     private void httpRequest(final String address) {
-        HttpUtil.sentHttpRequest(address, mQueue, new HttpUtil.HttpCallbackListener() {
+        AllModel.getDataFromNetwork(address, mQueue, new AllCallback() {
             @Override
-            public void onFinish(Object response) {
-                List<String> list = UsingGson.getUsingGson().chaHuaIdJson(response.toString());
-                HttpUtil.sentReqPicture(list, mQueue,false, new HttpUtil.HttpCallbackListener() {
-                    @Override
-                    public void onFinish(Object response) {
-                        List<String> listStr = new ArrayList<>();
-                        for (String x : (List<String>) response) {
-                            String str = UsingGson.getUsingGson().chaHuaURLJson(x);
-                            listStr.add(str);
-                        }
-                        realizeAdapter(listStr);
-                    }
-                    @Override
-                    public void onError(VolleyError e) {
-                        e.printStackTrace();
-                    }
-                });
+            public void onFinish(List<String> list) {
+                realizeAdapter(list);
             }
+
             @Override
-            public void onError(VolleyError e) {
-                e.printStackTrace();
+            public void onFail() {
+                Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
             }
         });
     }

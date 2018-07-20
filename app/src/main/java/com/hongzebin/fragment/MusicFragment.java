@@ -19,6 +19,8 @@ import com.hongzebin.activity.MusicDetailActivity;
 import com.hongzebin.adapter.TypeListAdapter;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.db.AddingAndQuerying;
+import com.hongzebin.model.TypeOutlineCallback;
+import com.hongzebin.model.TypeOutlineModel;
 import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
@@ -43,10 +45,8 @@ public class MusicFragment extends Fragment {
     private TypeListAdapter mAdapter;
     private SwipeRefreshLayout mRefresh;
     private ListView mListView;
-    private Handler mHandler;
     private int mCount = 0;     //设置加载更多后，初始显示的条的位置
     private View mView;
-    private String mJsonData;
     private View mFooterView;   //加载更多
     private String mId;    //请求http的URL的指定id
     private String mAddress;
@@ -62,36 +62,6 @@ public class MusicFragment extends Fragment {
         mListView = (ListView) mView.findViewById(R.id.type_listview);
         Button btn = (Button) mFooterView.findViewById(R.id.loading_btn);
         mListView.addFooterView(mFooterView);   //listview最后一条为加载更多
-        //异步消息处理，接受消息
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    //正常加载
-                    case NORMAL_LOADING:
-                        mListView.setAdapter(mAdapter);
-                        break;
-                    //刷新加载
-                    case REFRESH_LOADING:
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setAdapter(mAdapter);
-                        mRefresh.setRefreshing(false);      //隐藏刷新图标
-                        break;
-                    //加载更多
-                    case ADD_LOADING:
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setAdapter(mAdapter);
-                        mListView.setSelection(mCount);
-                        break;
-                    //无网络提醒
-                    case NONETWORK_REMIND:
-                        Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
-                        mRefresh.setRefreshing(false);      //隐藏刷新图标
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
         //刷新监听
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -106,10 +76,10 @@ public class MusicFragment extends Fragment {
                 mCount = mAdapter.getCount();
                 mId = mList.get(mList.size() - 1).getId();
                 mAddress = ApiConstant.refreshMusicApi(mId);
-                judgeDataExistence(ADD_LOADING, "LIST");
+                getData(ADD_LOADING, "LIST");
             }
         });
-        judgeDataExistence(NORMAL_LOADING, "LIST");
+        getData(NORMAL_LOADING, "LIST");
         //打开活动，并传值
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -124,27 +94,26 @@ public class MusicFragment extends Fragment {
     /**
      * 解析实例适配器
      *
-     * @param response http请求后的json数据
+     * @param list 获取到的数据的列表
      * @param mes      区别不同情况
      */
-    private void realizeAdapter(String response, int mes) {
-        Message message = new Message();
+    private void realizeAdapter(List<TypeOutline> list, int mes) {
         if (mes == NORMAL_LOADING) {
-            mList.addAll(UsingGson.getUsingGson().outlineGson(response));
+            mList.addAll(list);
             mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
-            //异步消息处理，发送消息
-            message.what = mes;
-            mHandler.sendMessage(message);
+            mListView.setAdapter(mAdapter);
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
-            mList.addAll(UsingGson.getUsingGson().outlineGson(response));
+            mList.addAll(list);
             mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
-            message.what = mes;
-            mHandler.sendMessage(message);
+            mAdapter.notifyDataSetChanged();
+            mListView.setAdapter(mAdapter);
+            mRefresh.setRefreshing(false);      //隐藏刷新图标
         } else if (mes == ADD_LOADING) {
-            mList.addAll(UsingGson.getUsingGson().outlineGson(response));
-            message.what = mes;
-            mHandler.sendMessage(message);
+            mList.addAll(list);
+            mAdapter.notifyDataSetChanged();
+            mListView.setAdapter(mAdapter);
+            mListView.setSelection(mCount);
         }
     }
 
@@ -155,19 +124,16 @@ public class MusicFragment extends Fragment {
      * @param address 请求的URL
      */
     private void httpRequest(final int mes, final String address) {
-        //http请求后解析得到列表需要的信息
-        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
+        TypeOutlineModel.getDataFromNetwork(address, new TypeOutlineCallback() {
             @Override
-            public void onFinish(Object response) {
-                PutingData.putJson(address, (String) response);    //加载进数据库
-                realizeAdapter((String) response, mes);
+            public void onFinish(List<TypeOutline> list) {
+                realizeAdapter(list, mes);
             }
 
             @Override
-            public void onError(VolleyError e) {
-                Message message = new Message();
-                message.what = NONETWORK_REMIND;
-                mHandler.sendMessage(message);
+            public void onFail() {
+                Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
+                mRefresh.setRefreshing(false);      //隐藏刷新图标
             }
         });
     }
@@ -177,11 +143,16 @@ public class MusicFragment extends Fragment {
      *
      * @param mes 区别不同情况
      */
-    private void judgeDataExistence(final int mes, String tableName) {
-        if ((mJsonData = (String)AddingAndQuerying.getmAddingAndQuerying().query(mAddress, tableName)) == null) {
-            httpRequest(mes, mAddress);
-        } else {
-            realizeAdapter(mJsonData, mes);
-        }
+    private void getData(final int mes, String tableName) {
+        TypeOutlineModel.getDataFromBD(mAddress, tableName, new TypeOutlineCallback() {
+            @Override
+            public void onFinish(List<TypeOutline> list) {
+                realizeAdapter(list, mes);
+            }
+            @Override
+            public void onFail() {
+                httpRequest(mes, mAddress);
+            }
+        });
     }
 }

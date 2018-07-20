@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresPermission;
 import android.text.Html;
 import android.util.Log;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ import com.hongzebin.adapter.ComListAdapter;
 import com.hongzebin.bean.Comment;
 import com.hongzebin.bean.ReadDetail;
 import com.hongzebin.db.AddingAndQuerying;
+import com.hongzebin.model.ReadDetailCallback;
+import com.hongzebin.model.ReadDetailModel;
 import com.hongzebin.ui.ListViewForScrollView;
 import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
@@ -40,7 +43,6 @@ public class ReadDetailActivity extends Activity {
     private ReadDetail mReadDetail;
     private String mDetailURL;
     private String mCommentURL;
-    private Handler mHandler;
 
     private TextView mTitle;
     private TextView mText;
@@ -58,29 +60,10 @@ public class ReadDetailActivity extends Activity {
         String itemId = intent.getStringExtra("itemId");
         mDetailURL = ApiConstant.getReadAddress(itemId);
         mCommentURL = ApiConstant.getReadComAddress(itemId);
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case DETAIL:
-                        putDataToUI();
-                        break;
-                    case COMMENT:
-                        ListViewForScrollView listView = (ListViewForScrollView) findViewById(R.id.detail_mylistview);
-                        listView.setFocusable(false);
-                        listView.setAdapter(mComAdapter);
-                        break;
-                    case NONETWORK_REMIND:
-                        Toast.makeText(ReadDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
         //请求评论， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(COMMENT, "LIST");
+        getData(COMMENT, "LIST");
         //请求阅读详细， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(DETAIL, "READ");
+        getData(DETAIL, "READ");
     }
 
     /**
@@ -102,17 +85,14 @@ public class ReadDetailActivity extends Activity {
      * @param mes      区别不同情况
      */
     private void realizeAdapter(Object response, int mes) {
-        Message message = new Message();
         if (mes == DETAIL) {
             mReadDetail = (ReadDetail) response;
-            //异步消息处理，发送消息
-            message.what = DETAIL;
-            mHandler.sendMessage(message);
+            putDataToUI();
         } else {
-            List<Comment> comList = UsingGson.getUsingGson().commentGson((String)response);
-            mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, comList);
-            message.what = COMMENT;
-            mHandler.sendMessage(message);
+            mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, (List<Comment>)response);
+            ListViewForScrollView listView = (ListViewForScrollView) findViewById(R.id.detail_mylistview);
+            listView.setFocusable(false);
+            listView.setAdapter(mComAdapter);
         }
     }
 
@@ -123,27 +103,15 @@ public class ReadDetailActivity extends Activity {
      * @param address 请求的url
      */
     private void httpRequest(final int mes, final String address) {
-        //http请求后解析得到列表需要的信息
-        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
+        ReadDetailModel.getDataFromNetwork(mes, address, new ReadDetailCallback() {
             @Override
-            public void onFinish(Object response) {
-                Object object;
-                if(mes == DETAIL){
-                    object = UsingGson.getUsingGson().readDetailGson((String) response);
-                    PutingData.putRead(address, (ReadDetail) object);    //加载进数据库
-                }else {
-                    object = response;
-                    PutingData.putJson(address, (String) response);    //加载进数据库
-                }
+            public void onFinish(Object object) {
                 realizeAdapter(object, mes);
             }
 
             @Override
-            public void onError(VolleyError e) {
-                Log.e("ReadDetailActivity", Log.getStackTraceString(e) );
-                Message message = new Message();
-                message.what = NONETWORK_REMIND;
-                mHandler.sendMessage(message);
+            public void onFail() {
+                Toast.makeText(ReadDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -179,22 +147,21 @@ public class ReadDetailActivity extends Activity {
      * @param flag 区别不同情况
      * @param tableName 数据库表名
      */
-    private void judgeDataExistence(final int flag, String tableName) {
-        String url;
-        boolean judge;
+    private void getData(final int flag, String tableName) {
+        ReadDetailModel.getDataFromBD(flag, mDetailURL, mCommentURL, tableName, new ReadDetailCallback() {
+            @Override
+            public void onFinish(Object object) {
+                realizeAdapter(object, flag);
+            }
 
-        if (flag == DETAIL) {
-            url = mDetailURL;
-        } else {
-            url = mCommentURL;
-        }
-
-        final Object object = AddingAndQuerying.getmAddingAndQuerying().query(url, tableName);
-        judge = object == null;
-        if (judge) {
-            httpRequest(flag, url);
-        } else {
-            realizeAdapter(object, flag);
-        }
+            @Override
+            public void onFail() {
+                if (flag == DETAIL) {
+                    httpRequest(flag, mDetailURL);
+                } else {
+                    httpRequest(flag, mCommentURL);
+                }
+            }
+        });
     }
 }

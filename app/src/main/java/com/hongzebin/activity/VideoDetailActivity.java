@@ -4,31 +4,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.Html;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
 import com.hongzebin.R;
 import com.hongzebin.adapter.ComListAdapter;
 import com.hongzebin.bean.Comment;
 import com.hongzebin.bean.VideoDetail;
-import com.hongzebin.db.AddingAndQuerying;
+import com.hongzebin.model.VideoDetailCallback;
+import com.hongzebin.model.VideoDetailModel;
 import com.hongzebin.ui.ListViewForScrollView;
 import com.hongzebin.util.ApiConstant;
-import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
-import com.hongzebin.util.PutingData;
-import com.hongzebin.util.UsingGson;
 
 import java.util.List;
 
 import static com.hongzebin.util.Constant.COMMENT;
 import static com.hongzebin.util.Constant.DETAIL;
-import static com.hongzebin.util.Constant.NONETWORK_REMIND;
 
 /**
  * 影视详细
@@ -40,7 +33,6 @@ public class VideoDetailActivity extends Activity {
     private VideoDetail mVideoDetail;
     private String mDetailURL;
     private String mCommentURL;
-    private Handler mHandler;
 
     private TextView mTitle;
     private TextView mAuthor;
@@ -57,29 +49,10 @@ public class VideoDetailActivity extends Activity {
         String itemId = intent.getStringExtra("itemId");
         mDetailURL = ApiConstant.getVideoAddress(itemId);
         mCommentURL = ApiConstant.getVideoComAddress(itemId);
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case DETAIL:
-                        putDataToUI();
-                        break;
-                    case COMMENT:
-                        ListViewForScrollView listView = (ListViewForScrollView) findViewById(R.id.video_mylistview);
-                        listView.setFocusable(false);
-                        listView.setAdapter(mComAdapter);
-                        break;
-                    case NONETWORK_REMIND:
-                        Toast.makeText(VideoDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
         //请求评论， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(COMMENT, "LIST");
+        getData(COMMENT, "LIST");
         //请求阅读详细， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(DETAIL, "VIDEO");
+        getData(DETAIL, "VIDEO");
     }
 
     /**
@@ -101,47 +74,33 @@ public class VideoDetailActivity extends Activity {
      * @param mes      区别不同情况
      */
     private void realizeAdapter(Object response, int mes) {
-        Message message = new Message();
         if (mes == DETAIL) {
-            mVideoDetail =(VideoDetail) response;
-            //异步消息处理，发送消息
-            message.what = DETAIL;
-            mHandler.sendMessage(message);
+            mVideoDetail = (VideoDetail) response;
+            putDataToUI();
         } else {
-            List<Comment> comList = UsingGson.getUsingGson().commentGson((String) response);
-            mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, comList);
-            message.what = COMMENT;
-            mHandler.sendMessage(message);
+            mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, (List<Comment>) response);
+            ListViewForScrollView listView = (ListViewForScrollView) findViewById(R.id.video_mylistview);
+            listView.setFocusable(false);
+            listView.setAdapter(mComAdapter);
         }
     }
 
     /**
      * http请求得到的数据加载入数据库， 根据不同情况实例适配器
      *
-     * @param mes 区别不同情况
+     * @param mes     区别不同情况
      * @param address 请求的url
      */
     private void httpRequest(final int mes, final String address) {
-        //http请求后解析得到列表需要的信息
-        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
+        VideoDetailModel.getDataFromNetwork(mes, address, new VideoDetailCallback() {
             @Override
-            public void onFinish(Object response) {
-                Object object;
-                if(mes == DETAIL){
-                    object = UsingGson.getUsingGson().videoDetailGson((String) response);
-                    PutingData.putVideo(address, (VideoDetail) object);    //加载进数据库
-                }else {
-                    object = response;
-                    PutingData.putJson(address, (String) response);    //加载进数据库
-                }
+            public void onFinish(Object object) {
                 realizeAdapter(object, mes);
             }
 
             @Override
-            public void onError(VolleyError e) {
-                Message message = new Message();
-                message.what = NONETWORK_REMIND;
-                mHandler.sendMessage(message);
+            public void onFail() {
+                Toast.makeText(VideoDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -171,25 +130,25 @@ public class VideoDetailActivity extends Activity {
     /**
      * 判断数据库是否存在未超时可用数据，有就使用，无则请求
      *
-     * @param flag 区别不同情况
+     * @param flag      区别不同情况
      * @param tableName 数据库表名
      */
-    private void judgeDataExistence(final int flag, String tableName) {
-        String url;
-        boolean judge;
+    private void getData(final int flag, String tableName) {
+        VideoDetailModel.getDataFromBD(flag, mDetailURL, mCommentURL, tableName, new VideoDetailCallback() {
+            @Override
+            public void onFinish(Object object) {
+                realizeAdapter(object, flag);
+            }
 
-        if (flag == DETAIL) {
-            url = mDetailURL;
-        } else {
-            url = mCommentURL;
-        }
+            @Override
+            public void onFail() {
+                if (flag == DETAIL) {
+                    httpRequest(flag, mDetailURL);
+                } else {
+                    httpRequest(flag, mCommentURL);
+                }
 
-        final Object object = AddingAndQuerying.getmAddingAndQuerying().query(url, tableName);
-        judge = object == null;
-        if (judge) {
-            httpRequest(flag, url);
-        } else {
-            realizeAdapter(object, flag);
-        }
+            }
+        });
     }
 }

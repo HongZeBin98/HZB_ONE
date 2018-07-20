@@ -1,5 +1,6 @@
 package com.hongzebin.fragment;
 
+import android.graphics.Picture;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,7 +20,12 @@ import com.android.volley.toolbox.Volley;
 import com.hongzebin.R;
 import com.hongzebin.adapter.PictureListAdapter;
 import com.hongzebin.bean.PictureDetail;
+import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.db.AddingAndQuerying;
+import com.hongzebin.model.PictureListCallback;
+import com.hongzebin.model.PictureListModel;
+import com.hongzebin.model.TypeOutlineCallback;
+import com.hongzebin.model.TypeOutlineModel;
 import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.ListTurning;
@@ -47,7 +53,6 @@ public class PictureFragment extends Fragment {
     private PictureListAdapter mAdapter;
     private SwipeRefreshLayout mRefresh;
     private ListView mListView;
-    private Handler mHandler;
     private View mView;
     private String mJsonData;
     private View mFooterView;   //加载更多
@@ -68,36 +73,6 @@ public class PictureFragment extends Fragment {
         mRefresh = (SwipeRefreshLayout) mView.findViewById(R.id.refresh);
         Button btn = (Button) mFooterView.findViewById(R.id.loading_btn);
         mListView.addFooterView(mFooterView);   //活动列表最后一条为加载更多
-        //异步消息处理，接受消息
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    //正常加载
-                    case NORMAL_LOADING:
-                        mListView.setAdapter(mAdapter);
-                        break;
-                    //刷新加载
-                    case REFRESH_LOADING:
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setAdapter(mAdapter);
-                        mRefresh.setRefreshing(false);      //隐藏刷新图标
-                        break;
-                    //加载更多
-                    case ADD_LOADING:
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setAdapter(mAdapter);
-                        mListView.setSelection(mCount);
-                        break;
-                    //无网络提示
-                    case NONETWORK_REMIND:
-                        Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
-                        mRefresh.setRefreshing(false);      //隐藏刷新图标
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
         //刷新监听
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -112,10 +87,10 @@ public class PictureFragment extends Fragment {
                 mCount = mAdapter.getCount();
                 mId = mList.get(mList.size() - 1).getHpcontent_id();
                 mAddress = ApiConstant.refreshPictureApi(mId);
-                judgeDataExistence(ADD_LOADING, "LIST");
+                getData(ADD_LOADING, "LIST");
             }
         });
-        judgeDataExistence(NORMAL_LOADING, "LIST");
+        getData(NORMAL_LOADING, "LIST");
         return mView;
     }
 
@@ -125,30 +100,23 @@ public class PictureFragment extends Fragment {
      * @param list http请求后的json数据
      * @param mes  区别不同情况
      */
-    private void realizeAdapter(List<String> list, int mes) {
-        Message message = new Message();
+    private void realizeAdapter(List<PictureDetail> list, int mes) {
         if (mes == NORMAL_LOADING) {
-            for (String x : list) {
-                mList.add(UsingGson.getUsingGson().chaHuaDetailGson(x));
-            }
+            mList.addAll(list);
             mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
-            //异步消息处理，发送消息
-            message.what = mes;
-            mHandler.sendMessage(message);
+            mListView.setAdapter(mAdapter);
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
-            for (String x : list) {
-                mList.add(UsingGson.getUsingGson().chaHuaDetailGson(x));
-            }
+            mList.addAll(list);
             mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
-            message.what = mes;
-            mHandler.sendMessage(message);
+            mAdapter.notifyDataSetChanged();
+            mListView.setAdapter(mAdapter);
+            mRefresh.setRefreshing(false);      //隐藏刷新图标
         } else if (mes == ADD_LOADING) {
-            for (String x : list) {
-                mList.add(UsingGson.getUsingGson().chaHuaDetailGson(x));
-            }
-            message.what = mes;
-            mHandler.sendMessage(message);
+            mList.addAll(list);
+            mAdapter.notifyDataSetChanged();
+            mListView.setAdapter(mAdapter);
+            mListView.setSelection(mCount);
         }
     }
 
@@ -158,31 +126,16 @@ public class PictureFragment extends Fragment {
      * @param mes 区别不同情况
      */
     private void httpRequest(final int mes, final String address) {
-        HttpUtil.sentHttpRequest(address, mQueue, new HttpUtil.HttpCallbackListener() {
+        PictureListModel.getDataFromNetwork(address, mQueue, new PictureListCallback() {
             @Override
-            public void onFinish(Object response) {
-                List<String> list = UsingGson.getUsingGson().chaHuaIdJson(response.toString());
-                HttpUtil.sentReqPicture(list, mQueue,true, new HttpUtil.HttpCallbackListener() {
-                    @Override
-                    public void onFinish(Object response) {
-                        List<String> listStr = (List<String>) response;
-                        //储存入数据库
-                        PutingData.putList(listStr, address);
-                        realizeAdapter(listStr, mes);
-                    }
-
-                    @Override
-                    public void onError(VolleyError e) {
-                        e.printStackTrace();
-                    }
-                });
+            public void onFinish(List<PictureDetail> list) {
+                realizeAdapter(list, mes);
             }
 
             @Override
-            public void onError(VolleyError e) {
-                Message message = new Message();
-                message.what = NONETWORK_REMIND;
-                mHandler.sendMessage(message);
+            public void onFail() {
+                Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
+                mRefresh.setRefreshing(false);      //隐藏刷新图标
             }
         });
     }
@@ -192,17 +145,16 @@ public class PictureFragment extends Fragment {
      *
      * @param mes 区别不同情况
      */
-    private void judgeDataExistence(final int mes, String tableName) {
-        if ((mJsonData = (String)AddingAndQuerying.getmAddingAndQuerying().query(mAddress, tableName)) == null) {
-            httpRequest(mes, mAddress);
-        } else {
-            final List<String> list = ListTurning.strToList(mJsonData);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    realizeAdapter(list, mes);
-                }
-            }).start();
-        }
+    private void getData(final int mes, String tableName) {
+        PictureListModel.getDataFromBD(mAddress, tableName, new PictureListCallback() {
+            @Override
+            public void onFinish(List<PictureDetail> list) {
+                realizeAdapter(list, mes);
+            }
+            @Override
+            public void onFail() {
+                httpRequest(mes, mAddress);
+            }
+        });
     }
 }

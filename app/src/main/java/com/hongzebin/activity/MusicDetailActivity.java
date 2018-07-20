@@ -17,6 +17,8 @@ import com.hongzebin.adapter.ComListAdapter;
 import com.hongzebin.bean.Comment;
 import com.hongzebin.bean.MusicDetail;
 import com.hongzebin.db.AddingAndQuerying;
+import com.hongzebin.model.MusicDetailCallback;
+import com.hongzebin.model.MusicDetailModel;
 import com.hongzebin.ui.ListViewForScrollView;
 import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.DownloadImage;
@@ -37,12 +39,11 @@ import static com.hongzebin.util.Constant.NONETWORK_REMIND;
  * Created by 洪泽彬
  */
 
-public class MusicDetailActivity extends Activity{
+public class MusicDetailActivity extends Activity {
     private ComListAdapter mComAdapter = null;
     private MusicDetail mMusicDetail;
     private String mDetailURL;
     private String mCommentURL;
-    private Handler mHandler;
 
     private ImageView mImg;
     private TextView mTitle;
@@ -64,29 +65,10 @@ public class MusicDetailActivity extends Activity{
         String itemId = intent.getStringExtra("itemId");
         mDetailURL = ApiConstant.getMusicAddress(itemId);
         mCommentURL = ApiConstant.getMusicComAddress(itemId);
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case DETAIL:
-                        putDataToUI();
-                        break;
-                    case COMMENT:
-                        ListViewForScrollView listView = (ListViewForScrollView) findViewById(R.id.music_mylistview);
-                        listView.setFocusable(false);
-                        listView.setAdapter(mComAdapter);
-                        break;
-                    case NONETWORK_REMIND:
-                        Toast.makeText(MusicDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
         //请求评论， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(COMMENT, "LIST");
+        getData(COMMENT, "LIST");
         //请求音乐详细， 如果数据库存在未超时的有效数据则调用，否则http请求
-        judgeDataExistence(DETAIL, "MUSIC");
+        getData(DETAIL, "MUSIC");
     }
 
     /**
@@ -108,46 +90,33 @@ public class MusicDetailActivity extends Activity{
      * @param mes      区别不同情况
      */
     private void realizeAdapter(Object response, int mes) {
-        Message message = new Message();
         if (mes == DETAIL) {
             mMusicDetail = (MusicDetail) response;
-            //异步消息处理，发送消息
-            message.what = DETAIL;
-            mHandler.sendMessage(message);
+            putDataToUI();
         } else {
-            List<Comment> comList = UsingGson.getUsingGson().commentGson((String) response);
-            mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, comList);
-            message.what = COMMENT;
-            mHandler.sendMessage(message);
+            mComAdapter = new ComListAdapter(OneApplication.getmContext(), R.layout.commentlistview, (List<Comment>) response);
+            ListViewForScrollView listView = (ListViewForScrollView) findViewById(R.id.music_mylistview);
+            listView.setFocusable(false);
+            listView.setAdapter(mComAdapter);
         }
     }
 
     /**
      * http请求得到的数据加载入数据库， 根据不同情况实例适配器
      *
-     * @param mes 区别不同情况
+     * @param mes     区别不同情况
      * @param address 请求的url
      */
     private void httpRequest(final int mes, final String address) {
-        HttpUtil.sentHttpRequest(address, null, new HttpUtil.HttpCallbackListener() {
+        MusicDetailModel.getDataFromNetwork(mes, address, new MusicDetailCallback() {
             @Override
-            public void onFinish(Object response) {
-                Object object;
-                if(mes == DETAIL){
-                    object = UsingGson.getUsingGson().musicDetailGson((String) response);
-                    PutingData.putMusic(address, (MusicDetail) object);    //加载进数据库
-                }else {
-                    object = response;
-                    PutingData.putJson(address, (String) response);    //加载进数据库
-                }
+            public void onFinish(Object object) {
                 realizeAdapter(object, mes);
             }
 
             @Override
-            public void onError(VolleyError e) {
-                Message message = new Message();
-                message.what = NONETWORK_REMIND;
-                mHandler.sendMessage(message);
+            public void onFail() {
+                Toast.makeText(MusicDetailActivity.this, "请联网后重试", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -188,25 +157,25 @@ public class MusicDetailActivity extends Activity{
     /**
      * 判断数据库是否存在未超时可用数据，有就使用，无则请求
      *
-     * @param flag 区别不同情况
+     * @param flag      区别不同情况
      * @param tableName 数据库表名
      */
-    private void judgeDataExistence(final int flag, String tableName) {
-        String url;
-        boolean judge;
+    private void getData(final int flag, String tableName) {
+        MusicDetailModel.getDataFromBD(flag, mDetailURL, mCommentURL, tableName, new MusicDetailCallback() {
+            @Override
+            public void onFinish(Object object) {
+                realizeAdapter(object, flag);
+            }
 
-        if (flag == DETAIL) {
-            url = mDetailURL;
-        } else {
-            url = mCommentURL;
-        }
+            @Override
+            public void onFail() {
+                if (flag == DETAIL) {
+                    httpRequest(flag, mDetailURL);
+                } else {
+                    httpRequest(flag, mCommentURL);
+                }
 
-        final Object object = AddingAndQuerying.getmAddingAndQuerying().query(url, tableName);
-        judge = object == null;
-        if (judge) {
-            httpRequest(flag, url);
-        } else {
-            realizeAdapter(object, flag);
-        }
+            }
+        });
     }
 }

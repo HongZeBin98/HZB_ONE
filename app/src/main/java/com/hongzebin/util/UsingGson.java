@@ -1,5 +1,7 @@
 package com.hongzebin.util;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hongzebin.bean.PictureDetail;
@@ -187,8 +189,7 @@ public class UsingGson {
             JSONObject jsonObject = new JSONObject(jsonData);
             if (jsonObject.getString("res").equals("0")) {
                 Gson gson = new Gson();
-                JSONObject jo = jsonObject.getJSONObject(jsonObject.getString("data"));
-                JSONArray jsonArray = jo.getJSONArray("data");
+                JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("data");
                 vd = gson.fromJson(jsonArray.get(0).toString(), VideoDetail.class);
             }
         } catch (JSONException e) {
