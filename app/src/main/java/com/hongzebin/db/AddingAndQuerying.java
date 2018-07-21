@@ -15,8 +15,6 @@ import com.hongzebin.util.OneApplication;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hongzebin.util.Constant.SAVING_TIME;
-
 /**
  * 对数据库数据进行增加和查询
  * Created by 洪泽彬

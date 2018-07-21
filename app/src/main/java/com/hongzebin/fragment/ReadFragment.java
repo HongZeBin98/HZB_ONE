@@ -3,6 +3,9 @@ package com.hongzebin.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +15,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.hongzebin.R;
+import com.hongzebin.activity.MusicDetailActivity;
 import com.hongzebin.activity.ReadDetailActivity;
+import com.hongzebin.adapter.GlobalAdapter;
 import com.hongzebin.adapter.TypeListAdapter;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.model.TypeOutlineCallback;
@@ -37,25 +42,22 @@ public class ReadFragment extends Fragment {
     private List<TypeOutline> mList;
     private TypeListAdapter mAdapter;
     private SwipeRefreshLayout mRefresh;
-    private ListView mListView;
-    private int mCount = 0;     //设置加载更多后，初始显示的条的位置
+    private RecyclerView mRecyclerView;
     private View mView;
-    private View mFooterView;   //加载更多
     private String mId;    //请求http的URL的指定
     private String mAddress;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mId = "0";
-        mAddress = ApiConstant.refreshReadApi(mId);
         mList = new ArrayList<>();
+        mAddress = ApiConstant.refreshReadApi(mId);
         mView = inflater.inflate(R.layout.type, container, false);
-        mFooterView = inflater.inflate(R.layout.loadingmore, null);
         mRefresh = (SwipeRefreshLayout) mView.findViewById(R.id.refresh);
-        mListView = (ListView) mView.findViewById(R.id.type_listview);
-        Button btn = (Button) mFooterView.findViewById(R.id.loading_btn);
-        mListView.addFooterView(mFooterView);   //listview最后一条为加载更多
-
+        mRecyclerView = (RecyclerView) mView.findViewById(R.id.type_recyclerView);
+        LinearLayoutManager linearLayoutManager =new LinearLayoutManager(OneApplication.getmContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mAdapter = new TypeListAdapter(new ArrayList<TypeOutline>(), R.layout.typelistview, mRecyclerView);
         //刷新监听
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -63,25 +65,7 @@ public class ReadFragment extends Fragment {
                 httpRequest(REFRESH_LOADING, READ_ADDRESS);
             }
         });
-        //加载更多按钮监听
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCount = mAdapter.getCount();
-                mId = mList.get(mList.size() - 1).getId();
-                mAddress = ApiConstant.refreshReadApi(mId);
-                getData(ADD_LOADING, "LIST");
-            }
-        });
         getData(NORMAL_LOADING, "LIST");
-        //打开活动，并传值
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TypeOutline to = mList.get(position);
-                ReadDetailActivity.startReadDetail(getActivity(), to.getItem_id());
-            }
-        });
         return mView;
     }
 
@@ -94,21 +78,42 @@ public class ReadFragment extends Fragment {
     private void realizeAdapter(List<TypeOutline> list, int mes) {
         if (mes == NORMAL_LOADING) {
             mList.addAll(list);
-            mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
-            mListView.setAdapter(mAdapter);
+            mAdapter.addData(mList, false);
+            setCallback();
+            mRecyclerView.setAdapter(mAdapter);
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
             mList.addAll(list);
-            mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
+            mAdapter.addData(mList, true);
+            setCallback();
             mAdapter.notifyDataSetChanged();
-            mListView.setAdapter(mAdapter);
             mRefresh.setRefreshing(false);      //隐藏刷新图标
         } else if (mes == ADD_LOADING) {
             mList.addAll(list);
+            mAdapter.addData(list, false);
             mAdapter.notifyDataSetChanged();
-            mListView.setAdapter(mAdapter);
-            mListView.setSelection(mCount);
+            mAdapter.setLoading(false);
         }
+    }
+
+    /**
+     * 实例回调接口
+     */
+    private void setCallback(){
+        mAdapter.setCallback(new GlobalAdapter.OnCallback() {
+            @Override
+            public void onClickItem(int position) {
+                TypeOutline to = mList.get(position);
+                ReadDetailActivity.startReadDetail(getActivity(), to.getItem_id());
+            }
+
+            @Override
+            public void onLoadMore() {
+                mId = mList.get(mList.size() - 1).getId();
+                mAddress = ApiConstant.refreshReadApi(mId);
+                getData(ADD_LOADING, "LIST");
+            }
+        });
     }
 
     /**

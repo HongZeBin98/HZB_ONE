@@ -33,7 +33,7 @@
             android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/list_yinyan"
+            android:id="@+id/list_forward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="18dp"

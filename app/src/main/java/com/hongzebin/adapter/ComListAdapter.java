@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.hongzebin.R;
 import com.hongzebin.bean.Comment;
+import com.hongzebin.util.DownloadImageForListView;
 
 import java.util.List;
 

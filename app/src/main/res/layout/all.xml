@@ -21,7 +21,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:src="@drawable/oneisall3" />
+            android:src="@drawable/oneisall" />
 
     </LinearLayout>
 

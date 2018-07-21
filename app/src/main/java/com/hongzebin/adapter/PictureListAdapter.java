@@ -1,6 +1,7 @@
 package com.hongzebin.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.hongzebin.R;
 import com.hongzebin.bean.PictureDetail;
+import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.util.DownloadImageForListView;
 
 import java.util.List;
@@ -20,82 +22,19 @@ import java.util.List;
  * 插画listview适配器
  * Created by 洪泽彬
  */
-public class PictureListAdapter extends BaseAdapter {
-    private ListView mListView;
-    private LayoutInflater mInflater;
-    private int mResourceId;
-    private List<PictureDetail> mObjects;
+public class PictureListAdapter extends GlobalAdapter<PictureDetail> {
 
-    public PictureListAdapter(Context context, ListView listView, int textViewResourceId, List<PictureDetail> objects) {
-        mInflater = LayoutInflater.from(context);
-        mObjects = objects;
-        mResourceId = textViewResourceId;
-        mListView = listView;
+    public PictureListAdapter(List<PictureDetail> mDatas, int mLayoutId, RecyclerView recyclerView) {
+        super(mDatas, mLayoutId, recyclerView);
     }
 
     @Override
-    public int getCount() {
-        return mObjects.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return mObjects.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        PictureDetail chd = mObjects.get(position);
-        View view;
-        ViewHolder viewHolder;
-        if (mListView == null) {
-            mListView = (ListView) parent;
-        }
-        //通过convertView对之前加载好的布局进行缓存
-        if (convertView == null) {
-            view = mInflater.inflate(mResourceId, parent,
-                    false);  //false:只为附布局中声明的layout属性生效
-            viewHolder = new ViewHolder();
-            viewHolder.authorText = (TextView) view.findViewById(R.id.text_author);
-            viewHolder.text = (TextView) view.findViewById(R.id.chahua_text);
-            viewHolder.pictureText = (TextView) view.findViewById(R.id.picture_author);
-            viewHolder.time = (TextView) view.findViewById(R.id.chahua_time);
-            viewHolder.number = (TextView) view.findViewById(R.id.chahua_number);
-            viewHolder.picture = (ImageView) view.findViewById(R.id.chahua_picture);
-            viewHolder.picture = (ImageView) view.findViewById(R.id.chahua_picture);
-            view.setTag(viewHolder);    //将ViewHolder存储在View中
-        } else {
-            view = convertView;
-            viewHolder = (ViewHolder) view.getTag();
-        }
-        //给图片控件控件设置一个Tag
-        viewHolder.picture.setImageResource(R.drawable.picturefail);
-        String img = chd.getHp_img_url();
-        viewHolder.picture.setTag(img);
-        new DownloadImageForListView(mListView).execute(img);
-        viewHolder.authorText.setText(chd.getText_authors());
-        viewHolder.text.setText(chd.getHp_content());
-        viewHolder.pictureText.setText(chd.getHp_author());
-        viewHolder.time.setText(chd.getLast_update_date());
-        viewHolder.number.setText(chd.getPraisenum());
-        return view;
-    }
-
-    /**
-     * 用于对控件实例进行缓存
-     */
-    private class ViewHolder {
-        TextView authorText;
-        TextView text;
-        TextView pictureText;
-        TextView time;
-        TextView number;
-        ImageView picture;
+    public void convert(GlobalViewHolder viewHolder, PictureDetail item) {
+        new DownloadImageForListView(viewHolder, R.id.chahua_picture).execute(item.getHp_img_url());
+        viewHolder.setText(R.id.text_author, item.getText_authors())
+                .setText(R.id.chahua_text, item.getHp_content())
+                .setText(R.id.picture_author, item.getHp_author())
+                .setText(R.id.chahua_time, item.getLast_update_date())
+                .setText(R.id.chahua_number, item.getPraisenum());
     }
 }

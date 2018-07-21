@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.hongzebin.adapter.GlobalViewHolder;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -15,10 +17,12 @@ import java.net.URL;
 
 public class DownloadImageForListView extends AsyncTask<String, Void, Drawable> {
     private String mImageUrl;
-    private ListView mListView;
+    GlobalViewHolder viewHolder;
+    int viewId;
 
-    public DownloadImageForListView(ListView listView) {
-        mListView = listView;
+    public DownloadImageForListView(GlobalViewHolder viewHolder, int viewId) {
+        this.viewHolder = viewHolder;
+        this.viewId = viewId;
     }
 
     //后台中下载图片
@@ -29,10 +33,7 @@ public class DownloadImageForListView extends AsyncTask<String, Void, Drawable> 
 
     //主线程更新UI
     public void onPostExecute(Drawable result) {
-        ImageView imageView = (ImageView) mListView.findViewWithTag(mImageUrl);
-        if (imageView != null && result != null) {
-            imageView.setImageDrawable(result);
-        }
+        viewHolder.setDrawable(viewId, result);
     }
 
     /**

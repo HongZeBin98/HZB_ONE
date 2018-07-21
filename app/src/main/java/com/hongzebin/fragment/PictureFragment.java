@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,9 +54,8 @@ public class PictureFragment extends Fragment {
     private List<PictureDetail> mList;
     private PictureListAdapter mAdapter;
     private SwipeRefreshLayout mRefresh;
-    private ListView mListView;
+    private RecyclerView mRecyclerView;
     private View mView;
-    private String mJsonData;
     private View mFooterView;   //加载更多
     private int mCount = 0;     //设置加载更多后，初始显示的条的位置
     private String mId;    //请求http的URL的指定id
@@ -69,10 +70,12 @@ public class PictureFragment extends Fragment {
         mList = new ArrayList<>();
         mView = inflater.inflate(R.layout.type, container, false);
         mFooterView = inflater.inflate(R.layout.loadingmore, null);
-        mListView = (ListView) mView.findViewById(R.id.type_listview);
+        mRecyclerView = (RecyclerView) mView.findViewById(R.id.type_recyclerView);
         mRefresh = (SwipeRefreshLayout) mView.findViewById(R.id.refresh);
         Button btn = (Button) mFooterView.findViewById(R.id.loading_btn);
-        mListView.addFooterView(mFooterView);   //活动列表最后一条为加载更多
+        LinearLayoutManager linearLayoutManager =new LinearLayoutManager(OneApplication.getmContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+//        mListView.addFooterView(mFooterView);   //活动列表最后一条为加载更多
         //刷新监听
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -81,15 +84,15 @@ public class PictureFragment extends Fragment {
             }
         });
         //加载更多的按钮监听
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCount = mAdapter.getCount();
-                mId = mList.get(mList.size() - 1).getHpcontent_id();
-                mAddress = ApiConstant.refreshPictureApi(mId);
-                getData(ADD_LOADING, "LIST");
-            }
-        });
+//        btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mCount = mAdapter.getCount();
+//                mId = mList.get(mList.size() - 1).getHpcontent_id();
+//                mAddress = ApiConstant.refreshPictureApi(mId);
+//                getData(ADD_LOADING, "LIST");
+//            }
+//        });
         getData(NORMAL_LOADING, "LIST");
         return mView;
     }
@@ -103,21 +106,22 @@ public class PictureFragment extends Fragment {
     private void realizeAdapter(List<PictureDetail> list, int mes) {
         if (mes == NORMAL_LOADING) {
             mList.addAll(list);
-            mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
-            mListView.setAdapter(mAdapter);
+            mAdapter = new PictureListAdapter(mList, R.layout.chahualistview, mRecyclerView);
+            mRecyclerView.setAdapter(mAdapter);
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
             mList.addAll(list);
-            mAdapter = new PictureListAdapter(OneApplication.getmContext(), mListView, R.layout.chahualistview, mList);
+            mAdapter = new PictureListAdapter(mList, R.layout.chahualistview, mRecyclerView);
             mAdapter.notifyDataSetChanged();
-            mListView.setAdapter(mAdapter);
+            mRecyclerView.setAdapter(mAdapter);
             mRefresh.setRefreshing(false);      //隐藏刷新图标
-        } else if (mes == ADD_LOADING) {
-            mList.addAll(list);
-            mAdapter.notifyDataSetChanged();
-            mListView.setAdapter(mAdapter);
-            mListView.setSelection(mCount);
         }
+//        else if (mes == ADD_LOADING) {
+//            mList.addAll(list);
+//            mAdapter.notifyDataSetChanged();
+//            mRecyclerView.setAdapter(mAdapter);
+//            mListView.setSelection(mCount);
+//        }
     }
 
     /**

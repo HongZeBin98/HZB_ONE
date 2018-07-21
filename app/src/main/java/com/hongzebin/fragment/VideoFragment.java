@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.hongzebin.R;
+import com.hongzebin.activity.MusicDetailActivity;
 import com.hongzebin.activity.VideoDetailActivity;
+import com.hongzebin.adapter.GlobalAdapter;
 import com.hongzebin.adapter.TypeListAdapter;
 import com.hongzebin.bean.TypeOutline;
 import com.hongzebin.model.TypeOutlineCallback;
@@ -36,85 +40,33 @@ import static com.hongzebin.util.Constant.REFRESH_LOADING;
  * Created by 洪泽彬
  */
 public class VideoFragment extends Fragment {
+
     private List<TypeOutline> mList;
     private TypeListAdapter mAdapter;
     private SwipeRefreshLayout mRefresh;
-    private ListView mListView;
-    private Handler mHandler;
-    private String mJsonData;
-    private int mCount = 0;     //设置加载更多后，初始显示的条的位置
+    private RecyclerView mRecyclerView;
     private View mView;
-    private View mFooterView;   //加载更多
     private String mId;    //请求http的URL的指定id
     private String mAddress;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mId = "0";
-        mAddress = ApiConstant.refreshVideoApi(mId);
         mList = new ArrayList<>();
+        mAddress = ApiConstant.refreshVideoApi(mId);
         mView = inflater.inflate(R.layout.type, container, false);
-        mFooterView = inflater.inflate(R.layout.loadingmore, null);
-        mListView = (ListView) mView.findViewById(R.id.type_listview);
+        mRecyclerView = (RecyclerView) mView.findViewById(R.id.type_recyclerView);
         mRefresh = (SwipeRefreshLayout) mView.findViewById(R.id.refresh);
-        Button btn = (Button) mFooterView.findViewById(R.id.loading_btn);
-        mListView.addFooterView(mFooterView);   //listview最后一条为加载更多
-        //异步消息处理，接受消息
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    //正常加载
-                    case NORMAL_LOADING:
-                        mListView.setAdapter(mAdapter);
-                        break;
-                    //刷新加载
-                    case REFRESH_LOADING:
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setAdapter(mAdapter);
-                        mRefresh.setRefreshing(false);      //隐藏刷新图标
-                        break;
-                    //加载更多
-                    case ADD_LOADING:
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setAdapter(mAdapter);
-                        mListView.setSelection(mCount);
-                        break;
-                    //无网络提示
-                    case NONETWORK_REMIND:
-                        Toast.makeText(getActivity(), "请联网后重试", Toast.LENGTH_SHORT).show();
-                        mRefresh.setRefreshing(false);      //隐藏刷新图标
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-        //刷新监听
+        LinearLayoutManager linearLayoutManager =new LinearLayoutManager(OneApplication.getmContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mAdapter = new TypeListAdapter(new ArrayList<TypeOutline>(), R.layout.typelistview, mRecyclerView);
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 httpRequest(REFRESH_LOADING, VIDEO_ADDRESS);
             }
         });
-        //加载更多按钮监听
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCount = mAdapter.getCount();
-                mId = mList.get(mList.size() - 1).getId();
-                mAddress = ApiConstant.refreshVideoApi(mId);
-                getData(ADD_LOADING, "LIST");
-            }
-        });
         getData(NORMAL_LOADING, "LIST");
-        //打开活动，并传值
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TypeOutline to = mList.get(position);
-                VideoDetailActivity.startVideoDetail(getActivity(), to.getItem_id());
-            }
-        });
         return mView;
     }
 
@@ -126,21 +78,40 @@ public class VideoFragment extends Fragment {
     private void realizeAdapter(List<TypeOutline> list, int mes) {
         if (mes == NORMAL_LOADING) {
             mList.addAll(list);
-            mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
-            mListView.setAdapter(mAdapter);
+            mAdapter.addData(mList, false);
+            setCallback();
+            mRecyclerView.setAdapter(mAdapter);
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
             mList.addAll(list);
-            mAdapter = new TypeListAdapter(OneApplication.getmContext(), mListView, R.layout.typelistview, mList);
+            mAdapter.addData(mList, true);
+            setCallback();
             mAdapter.notifyDataSetChanged();
-            mListView.setAdapter(mAdapter);
             mRefresh.setRefreshing(false);      //隐藏刷新图标
-        } else if (mes == ADD_LOADING) {
-            mList.addAll(list);
-            mAdapter.notifyDataSetChanged();
-            mListView.setAdapter(mAdapter);
-            mListView.setSelection(mCount);
         }
+        else if (mes == ADD_LOADING) {
+            mList.addAll(list);
+            mAdapter.addData(list, false);
+            mAdapter.notifyDataSetChanged();
+            mAdapter.setLoading(false);
+        }
+    }
+
+    private void setCallback(){
+        mAdapter.setCallback(new GlobalAdapter.OnCallback() {
+            @Override
+            public void onClickItem(int position) {
+                TypeOutline to = mList.get(position);
+                VideoDetailActivity.startVideoDetail(getActivity(), to.getItem_id());
+            }
+
+            @Override
+            public void onLoadMore() {
+                mId = mList.get(mList.size() - 1).getId();
+                mAddress = ApiConstant.refreshVideoApi(mId);
+                getData(ADD_LOADING, "LIST");
+            }
+        });
     }
 
     /**
