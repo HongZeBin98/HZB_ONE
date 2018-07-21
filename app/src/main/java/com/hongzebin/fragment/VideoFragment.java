@@ -97,6 +97,9 @@ public class VideoFragment extends Fragment {
         }
     }
 
+    /**
+     * 实例回调接口
+     */
     private void setCallback(){
         mAdapter.setCallback(new GlobalAdapter.OnCallback() {
             @Override

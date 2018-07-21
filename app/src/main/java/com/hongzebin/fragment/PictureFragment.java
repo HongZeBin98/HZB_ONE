@@ -20,6 +20,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.hongzebin.R;
+import com.hongzebin.activity.MusicDetailActivity;
+import com.hongzebin.adapter.GlobalAdapter;
 import com.hongzebin.adapter.PictureListAdapter;
 import com.hongzebin.bean.PictureDetail;
 import com.hongzebin.bean.TypeOutline;
@@ -56,8 +58,6 @@ public class PictureFragment extends Fragment {
     private SwipeRefreshLayout mRefresh;
     private RecyclerView mRecyclerView;
     private View mView;
-    private View mFooterView;   //加载更多
-    private int mCount = 0;     //设置加载更多后，初始显示的条的位置
     private String mId;    //请求http的URL的指定id
     private String mAddress;
 
@@ -69,13 +69,11 @@ public class PictureFragment extends Fragment {
         mAddress = ApiConstant.refreshPictureApi(mId);
         mList = new ArrayList<>();
         mView = inflater.inflate(R.layout.type, container, false);
-        mFooterView = inflater.inflate(R.layout.loadingmore, null);
         mRecyclerView = (RecyclerView) mView.findViewById(R.id.type_recyclerView);
         mRefresh = (SwipeRefreshLayout) mView.findViewById(R.id.refresh);
-        Button btn = (Button) mFooterView.findViewById(R.id.loading_btn);
         LinearLayoutManager linearLayoutManager =new LinearLayoutManager(OneApplication.getmContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
-//        mListView.addFooterView(mFooterView);   //活动列表最后一条为加载更多
+        mAdapter = new PictureListAdapter(new ArrayList<PictureDetail>(), R.layout.chahualistview, mRecyclerView);
         //刷新监听
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -83,16 +81,6 @@ public class PictureFragment extends Fragment {
                 httpRequest(REFRESH_LOADING, PICTURE_ADDRESS);
             }
         });
-        //加载更多的按钮监听
-//        btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mCount = mAdapter.getCount();
-//                mId = mList.get(mList.size() - 1).getHpcontent_id();
-//                mAddress = ApiConstant.refreshPictureApi(mId);
-//                getData(ADD_LOADING, "LIST");
-//            }
-//        });
         getData(NORMAL_LOADING, "LIST");
         return mView;
     }
@@ -106,23 +94,42 @@ public class PictureFragment extends Fragment {
     private void realizeAdapter(List<PictureDetail> list, int mes) {
         if (mes == NORMAL_LOADING) {
             mList.addAll(list);
-            mAdapter = new PictureListAdapter(mList, R.layout.chahualistview, mRecyclerView);
+            mAdapter.addData(mList, false);
+            setCallback();
             mRecyclerView.setAdapter(mAdapter);
         } else if (mes == REFRESH_LOADING) {
             mList = new ArrayList<>();
             mList.addAll(list);
-            mAdapter = new PictureListAdapter(mList, R.layout.chahualistview, mRecyclerView);
+            mAdapter.addData(mList, false);
+            setCallback();
             mAdapter.notifyDataSetChanged();
-            mRecyclerView.setAdapter(mAdapter);
             mRefresh.setRefreshing(false);      //隐藏刷新图标
+        }else if(mes == ADD_LOADING){
+            mList.addAll(list);
+            mAdapter.addData(list, false);
+            mAdapter.notifyDataSetChanged();
+            mAdapter.setLoading(false);
         }
-//        else if (mes == ADD_LOADING) {
-//            mList.addAll(list);
-//            mAdapter.notifyDataSetChanged();
-//            mRecyclerView.setAdapter(mAdapter);
-//            mListView.setSelection(mCount);
-//        }
     }
+
+    /**
+     * 实例回调接口
+     */
+    private void setCallback(){
+        mAdapter.setCallback(new GlobalAdapter.OnCallback() {
+            @Override
+            public void onClickItem(int position) {
+            }
+
+            @Override
+            public void onLoadMore() {
+                mId = mList.get(mList.size() - 1).getHpcontent_id();
+                mAddress = ApiConstant.refreshPictureApi(mId);
+                getData(ADD_LOADING, "LIST");
+            }
+        });
+    }
+
 
     /**
      * 二次http请求和解析
