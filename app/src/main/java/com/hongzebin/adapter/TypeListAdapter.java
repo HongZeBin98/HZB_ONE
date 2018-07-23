@@ -26,17 +26,22 @@ import java.util.List;
 
 public class TypeListAdapter extends GlobalAdapter<TypeOutline> {
 
+    private RecyclerView mRecyclerView;
+
     public TypeListAdapter(List<TypeOutline> mData, int mLayoutId, RecyclerView recyclerView) {
         super(mData, mLayoutId , recyclerView);
+        mRecyclerView = recyclerView;
     }
 
     @Override
     public void convert(GlobalViewHolder viewHolder, TypeOutline item) {
-        new DownloadImageForListView(viewHolder, R.id.list_picture).execute(item.getImg_url());
         viewHolder.setText(R.id.list_author, item.getAuthor().getUser_name())
                 .setText(R.id.list_title, item.getTitle())
                 .setText(R.id.list_forward, item.getForward())
                 .setText(R.id.list_time, item.getPost_date())
-                .setText(R.id.list_number, item.getLike_count());
+                .setText(R.id.list_number, item.getLike_count())
+                .pictureSetTag(R.id.list_picture, item.getImg_url(), mRecyclerView);
+
+        new DownloadImageForListView(viewHolder, R.id.list_picture, mRecyclerView).execute(item.getImg_url());
     }
 }

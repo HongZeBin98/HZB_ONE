@@ -44,6 +44,7 @@ public class MusicFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         mId = "0";
         mList = new ArrayList<>();
         mAddress = ApiConstant.refreshMusicApi(mId);

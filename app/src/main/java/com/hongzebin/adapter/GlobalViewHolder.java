@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.hongzebin.R;
+
 public class GlobalViewHolder extends RecyclerView.ViewHolder {
 
     private SparseArray<View> mViews;
@@ -32,6 +34,14 @@ public class GlobalViewHolder extends RecyclerView.ViewHolder {
             mViews.put(viewId, view);
         }
         return (T)view;
+    }
+
+    public GlobalViewHolder pictureSetTag(int viewId, String imgUrl, RecyclerView recyclerView){
+        ImageView view = getView(viewId);
+        view.setImageResource(R.drawable.picturefail);
+        view.setTag(imgUrl);
+
+        return this;
     }
 
     public GlobalViewHolder setText(int viewId, String text){

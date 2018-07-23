@@ -2,6 +2,7 @@ package com.hongzebin.util;
 
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -18,10 +19,12 @@ import java.net.URL;
 public class DownloadImageForListView extends AsyncTask<String, Void, Drawable> {
     private String mImageUrl;
     GlobalViewHolder viewHolder;
+    RecyclerView recyclerView;
     int viewId;
 
-    public DownloadImageForListView(GlobalViewHolder viewHolder, int viewId) {
+    public DownloadImageForListView(GlobalViewHolder viewHolder, int viewId, RecyclerView recyclerView) {
         this.viewHolder = viewHolder;
+        this.recyclerView = recyclerView;
         this.viewId = viewId;
     }
 
@@ -33,7 +36,10 @@ public class DownloadImageForListView extends AsyncTask<String, Void, Drawable> 
 
     //主线程更新UI
     public void onPostExecute(Drawable result) {
-        viewHolder.setDrawable(viewId, result);
+        ImageView imageView = (ImageView)recyclerView.findViewWithTag(mImageUrl);
+        if(imageView != null && result != null){
+            viewHolder.setDrawable(viewId, result);
+        }
     }
 
     /**
