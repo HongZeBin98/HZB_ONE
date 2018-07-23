@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <ScrollView
@@ -27,8 +28,8 @@
                 android:id="@+id/music_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="18dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginEnd="20dp"
                 android:layout_marginTop="30dp"
                 android:textColor="#000000"
                 android:textSize="24sp" />
@@ -37,7 +38,7 @@
                 android:id="@+id/music_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:textSize="12sp" />
 
@@ -59,16 +60,17 @@
                 android:layout_marginTop="15dp"
                 android:background="#D3D3D3" />
 
-            <TextView
+            <WebView
                 android:id="@+id/music_story"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="18dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginTop="15dp"
                 android:lineSpacingExtra="7dp"
                 android:textSize="16sp"
-                android:textColor="#000000" />
+                android:textColor="#000000"
+                tools:ignore="WebViewLayout" />
 
             <TextView
                 android:layout_width="match_parent"

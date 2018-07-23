@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import com.hongzebin.model.MusicDetailModel;
 import com.hongzebin.ui.ListViewForScrollView;
 import com.hongzebin.util.ApiConstant;
 import com.hongzebin.util.DownloadImage;
+import com.hongzebin.util.GlobalTools;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
@@ -49,7 +51,7 @@ public class MusicDetailActivity extends Activity {
     private TextView mTitle;
     private TextView mAuthor;
     private TextView mSummary;
-    private TextView mStory;
+    private WebView mWebView;
     private TextView mName;
     private TextView mInfo;
     private TextView mLyric;
@@ -129,7 +131,7 @@ public class MusicDetailActivity extends Activity {
         mTitle = (TextView) findViewById(R.id.music_title);
         mAuthor = (TextView) findViewById(R.id.music_author);
         mSummary = (TextView) findViewById(R.id.music_summary);
-        mStory = (TextView) findViewById(R.id.music_story);
+        mWebView = (WebView) findViewById(R.id.music_story);
         mName = (TextView) findViewById(R.id.music_name);
         mInfo = (TextView) findViewById(R.id.music_info);
         mLyric = (TextView) findViewById(R.id.music_lyric);
@@ -151,7 +153,8 @@ public class MusicDetailActivity extends Activity {
         mConNum.setText(mMusicDetail.getCommentnum());
         mAuthor.setText("文/" + mMusicDetail.getAuthor().getUser_name());
         mLikeNum.setText(mMusicDetail.getPraisenum());
-        mStory.setText(Html.fromHtml(mMusicDetail.getStory()));
+        String html = GlobalTools.pictureSuitScreen(mMusicDetail.getStory());
+        mWebView.loadDataWithBaseURL(null, html,  "text/html" , "utf-8", null);
     }
 
     /**

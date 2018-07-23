@@ -9,6 +9,7 @@ import android.os.Message;
 import android.support.annotation.RequiresPermission;
 import android.text.Html;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import com.hongzebin.model.ReadDetailCallback;
 import com.hongzebin.model.ReadDetailModel;
 import com.hongzebin.ui.ListViewForScrollView;
 import com.hongzebin.util.ApiConstant;
+import com.hongzebin.util.GlobalTools;
 import com.hongzebin.util.HttpUtil;
 import com.hongzebin.util.OneApplication;
 import com.hongzebin.util.PutingData;
@@ -45,7 +47,7 @@ public class ReadDetailActivity extends Activity {
     private String mCommentURL;
 
     private TextView mTitle;
-    private TextView mText;
+    private WebView mWebView;
     private TextView mAuthor;
     private TextView mAuthorDesc;
     private TextView mLikeNum;
@@ -121,7 +123,7 @@ public class ReadDetailActivity extends Activity {
      */
     public void initUI() {
         mTitle = (TextView) findViewById(R.id.detail_title);
-        mText = (TextView) findViewById(R.id.detail_text);
+        mWebView = (WebView) findViewById(R.id.detail_text);
         mAuthor = (TextView) findViewById(R.id.detail_author);
         mAuthorDesc = (TextView) findViewById(R.id.detail_authordesc);
         mLikeNum = (TextView) findViewById(R.id.detial_likenum);
@@ -138,7 +140,7 @@ public class ReadDetailActivity extends Activity {
         mAuthorDesc.setText(mReadDetail.getAuthor().get(0).getDesc());
         mLikeNum.setText(mReadDetail.getPraisenum());
         mComNum.setText(mReadDetail.getCommentnum());
-        mText.setText(Html.fromHtml(mReadDetail.getHp_content()));
+        mWebView.loadDataWithBaseURL(null, mReadDetail.getHp_content(), "text/html" , "utf-8", null);
     }
 
     /**

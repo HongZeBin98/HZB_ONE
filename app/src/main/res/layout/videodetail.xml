@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ScrollView
         android:layout_width="match_parent"
@@ -50,7 +52,7 @@
                 android:layout_marginRight="18dp"
                 />
 
-            <TextView
+            <WebView
                 android:id="@+id/video_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,7 +62,7 @@
                 android:lineSpacingExtra="7dp"
                 android:textSize="16sp"
                 android:textColor="#000000"
-                />
+                tools:ignore="WebViewLayout" />
 
             <TextView
                 android:layout_width="match_parent"

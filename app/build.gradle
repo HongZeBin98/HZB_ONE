@@ -34,5 +34,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.11.0'
     compile 'com.android.support:recyclerview-v7:26.0.1'
     compile 'com.google.code.gson:gson:2.7'
+    compile 'org.jsoup:jsoup:1.11.2'
     testCompile 'junit:junit:4.12'
 }

@@ -7,6 +7,11 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 /**
@@ -79,5 +84,14 @@ public class GlobalTools {
         else {
             return true;
         }
+    }
+
+    public static String pictureSuitScreen(String html){
+        Document doc = Jsoup.parse(html);
+        Elements elements = doc.getElementsByTag("img");
+        for(Element element : elements){
+            element.attr("width", "100%").attr("height", "auto");
+        }
+        return doc.toString();
     }
 }

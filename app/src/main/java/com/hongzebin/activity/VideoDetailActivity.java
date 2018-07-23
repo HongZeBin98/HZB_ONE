@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ public class VideoDetailActivity extends Activity {
     private TextView mTitle;
     private TextView mAuthor;
     private TextView mSummary;
-    private TextView mText;
+    private WebView mWebView;
     private TextView mLikeNum;
 
     @Override
@@ -112,7 +113,7 @@ public class VideoDetailActivity extends Activity {
         mTitle = (TextView) findViewById(R.id.video_title);
         mAuthor = (TextView) findViewById(R.id.video_author);
         mSummary = (TextView) findViewById(R.id.video_summary);
-        mText = (TextView) findViewById(R.id.video_text);
+        mWebView = (WebView) findViewById(R.id.video_text);
         mLikeNum = (TextView) findViewById(R.id.video_likenum);
     }
 
@@ -124,7 +125,7 @@ public class VideoDetailActivity extends Activity {
         mAuthor.setText("文/" + mVideoDetail.getUser().getUser_name());
         mLikeNum.setText(mVideoDetail.getPraisenum());
         mSummary.setText(mVideoDetail.getSummary());
-        mText.setText(Html.fromHtml(mVideoDetail.getContent()));
+        mWebView.loadDataWithBaseURL(null, mVideoDetail.getContent(), "text/html" , "utf-8", null);
     }
 
     /**
